@@ -18,31 +18,36 @@ public class Main {
 		glfwMakeContextCurrent(win); //make so window can have context
 		
 		GL.createCapabilities();//creating a context 
+		//textures must be created below here
 		
-		float color_red = 1;
-		float color_blue = 0;
+		glEnable(GL_TEXTURE_2D);
+		
+		Texture tex = new Texture("./resource/playertest.png");
+		
 		while(!glfwWindowShouldClose(win)) { //while not closed
 			if(glfwGetKey(win, GLFW_KEY_ESCAPE) == GL_TRUE) {
 				glfwSetWindowShouldClose(win, true);
 			}
 			
-			if(glfwGetMouseButton(win, 0) == GL_TRUE){
-				color_red = 1;
-				color_blue = 1;
-			}else {
-				color_red = 1;
-				color_blue = 0;
-			}
 			glfwPollEvents();
 			
 			glClear(GL_COLOR_BUFFER_BIT); //set all pixels to black
 			//glClearColor(r,g,b);  //clear to colors
 			
+			tex.bind();
+			
 			glBegin(GL_QUADS);//drawing a quad
-				glColor4f(color_red,0,color_blue,0); //apply color
+				glTexCoord2f(0, 0);
+				//glColor4f(color_red,0,color_blue,0); //apply color
 				glVertex2f(-0.5f, 0.5f);
+				
+				glTexCoord2f(1, 0);
 				glVertex2f(0.5f, 0.5f);
+				
+				glTexCoord2f(1, 1);
 				glVertex2f(0.5f, -0.5f);
+				
+				glTexCoord2f(0, 1);
 				glVertex2f(-0.5f, -0.5f);
 			glEnd();
 			
