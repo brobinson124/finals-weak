@@ -23,13 +23,10 @@ public class Main {
 		glEnable(GL_TEXTURE_2D);
 		
 		float[] vertices = new float[]{
-				-0.5f, 0.5f, 0, //TL
-					0.5f, 0.5f, 0, //TR
-						0.5f, -0.5f, 0, //BR
-			
-				0.5f, -0.5f, 0, //BR
-					-0.5f, -0.5f, 0, //BL
-						-0.5f, 0.5f, 0, //TL
+				-0.5f, 0.5f, 0, //TL		0
+					0.5f, 0.5f, 0, //TR		1
+					0.5f, -0.5f, 0, //BR 	2
+					-0.5f, -0.5f, 0, //BL 	3
 		};
 		
 		
@@ -37,13 +34,15 @@ public class Main {
 				0,0,
 				1,0,
 				1,1,
-				
-				1,1,
 				0,1,
-				0,0
 		};
 		
-		Model model = new Model(vertices, texture);
+		int[] indices = new int[] {
+				0,1,2, //draw first triangle
+				2,3,0
+		};
+		
+		Model model = new Model(vertices, texture, indices);
 		Texture tex = new Texture("./resource/playertest.png");
 		
 		while(!glfwWindowShouldClose(win)) { //while not closed
