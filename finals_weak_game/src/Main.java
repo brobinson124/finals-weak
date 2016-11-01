@@ -27,8 +27,8 @@ public class Main {
 			}
 			
 			if(glfwGetMouseButton(win, 0) == GL_TRUE){
-				color_red = 0;
-				color_blue = 1;
+				color_red = 0.5f;
+				color_blue = 0.5f;
 			}else {
 				color_red = 1;
 				color_blue = 0;
