@@ -22,6 +22,28 @@ public class Main {
 		
 		glEnable(GL_TEXTURE_2D);
 		
+		float[] vertices = new float[]{
+				-0.5f, 0.5f, 0, //TL
+					0.5f, 0.5f, 0, //TR
+						0.5f, -0.5f, 0, //BR
+			
+				0.5f, -0.5f, 0, //BR
+					-0.5f, -0.5f, 0, //BL
+						-0.5f, 0.5f, 0, //TL
+		};
+		
+		
+		float[] texture = new float[]{
+				0,0,
+				1,0,
+				1,1,
+				
+				1,1,
+				0,1,
+				0,0
+		};
+		
+		Model model = new Model(vertices, texture);
 		Texture tex = new Texture("./resource/playertest.png");
 		
 		while(!glfwWindowShouldClose(win)) { //while not closed
@@ -36,20 +58,21 @@ public class Main {
 			
 			tex.bind();
 			
-			glBegin(GL_QUADS);//drawing a quad
-				glTexCoord2f(0, 0);
-				//glColor4f(color_red,0,color_blue,0); //apply color
-				glVertex2f(-0.5f, 0.5f);
-				
-				glTexCoord2f(1, 0);
-				glVertex2f(0.5f, 0.5f);
-				
-				glTexCoord2f(1, 1);
-				glVertex2f(0.5f, -0.5f);
-				
-				glTexCoord2f(0, 1);
-				glVertex2f(-0.5f, -0.5f);
-			glEnd();
+			model.render();
+//			glBegin(GL_QUADS);//drawing a quad
+//				glTexCoord2f(0, 0);
+//				//glColor4f(color_red,0,color_blue,0); //apply color
+//				glVertex2f(-0.5f, 0.5f);
+//				
+//				glTexCoord2f(1, 0);
+//				glVertex2f(0.5f, 0.5f);
+//				
+//				glTexCoord2f(1, 1);
+//				glVertex2f(0.5f, -0.5f);
+//				
+//				glTexCoord2f(0, 1);
+//				glVertex2f(-0.5f, -0.5f);
+//			glEnd();
 			
 			glfwSwapBuffers(win);
 			
