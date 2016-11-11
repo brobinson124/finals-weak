@@ -10,7 +10,7 @@ public class Main {
 			System.exit(1);
 		} 
 		
-		long win = glfwCreateWindow(700, 500, "Window", 0, 0);
+		long win = glfwCreateWindow(1600, 1800, "Window", 0, 0);
 					//width, height, name, isFullscreen, share
 		
 		glfwShowWindow(win);
@@ -44,6 +44,7 @@ public class Main {
 		
 		Model model = new Model(vertices, texture, indices);
 		Texture tex = new Texture("./resource/playertest.png");
+		Texture tex2 = new Texture("./resource/player2.png");
 		
 		while(!glfwWindowShouldClose(win)) { //while not closed
 			if(glfwGetKey(win, GLFW_KEY_ESCAPE) == GL_TRUE) {
@@ -55,8 +56,12 @@ public class Main {
 			glClear(GL_COLOR_BUFFER_BIT); //set all pixels to black
 			//glClearColor(r,g,b);  //clear to colors
 			
-			tex.bind();
+			if(glfwGetKey(win, GLFW_KEY_E) == GL_TRUE) {
+				tex = tex2;
+			}
 			
+			
+			tex.bind();
 			model.render();
 //			glBegin(GL_QUADS);//drawing a quad
 //				glTexCoord2f(0, 0);
