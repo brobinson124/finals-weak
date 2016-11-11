@@ -43,6 +43,7 @@ public class Main {
 		};
 		
 		Model model = new Model(vertices, texture, indices);
+		Shader shader = new Shader("shader");
 		Texture tex = new Texture("./resource/playertest.png");
 		Texture tex2 = new Texture("./resource/player2.png");
 		
@@ -59,24 +60,14 @@ public class Main {
 			if(glfwGetKey(win, GLFW_KEY_E) == GL_TRUE) {
 				tex = tex2;
 			}
+	
 			
 			
-			tex.bind();
+			//tex.bind();
+			shader.bind();
+			shader.setUniform("sampler", 0);
+			tex.bind(0);
 			model.render();
-//			glBegin(GL_QUADS);//drawing a quad
-//				glTexCoord2f(0, 0);
-//				//glColor4f(color_red,0,color_blue,0); //apply color
-//				glVertex2f(-0.5f, 0.5f);
-//				
-//				glTexCoord2f(1, 0);
-//				glVertex2f(0.5f, 0.5f);
-//				
-//				glTexCoord2f(1, 1);
-//				glVertex2f(0.5f, -0.5f);
-//				
-//				glTexCoord2f(0, 1);
-//				glVertex2f(-0.5f, -0.5f);
-//			glEnd();
 			
 			glfwSwapBuffers(win);
 			
