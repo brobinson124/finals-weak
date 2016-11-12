@@ -17,14 +17,14 @@ public class Model {
 	private int indices_id;
 	
 	public Model(float[] vertices, float[] texture_coords, int[] indices) {
-		draw_count = indices.length;//amount of vertices we draw with
+		draw_count = indices.length;//amount of vertices we draw with | Dylan
 		
 		
 		
-		vertex_id = glGenBuffers();//generate vertex ID
+		vertex_id = glGenBuffers();//generate vertex ID | Dylan
 		glBindBuffer(GL_ARRAY_BUFFER, vertex_id);
 		glBufferData(GL_ARRAY_BUFFER, createBuffer(vertices), GL_STATIC_DRAW);
-									//data: static vs dynamic(change later on)
+									//data: static vs dynamic(change later on) | Dylan
 		texture_id = glGenBuffers();
 		glBindBuffer(GL_ARRAY_BUFFER, texture_id);
 		glBufferData(GL_ARRAY_BUFFER, createBuffer(texture_coords), GL_STATIC_DRAW);

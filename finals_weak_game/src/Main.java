@@ -1,29 +1,33 @@
 import static org.lwjgl.glfw.GLFW.*;
+// Import OpenGL for images | Jesus
 import static org.lwjgl.opengl.GL11.*;
 import org.lwjgl.opengl.GL;
 
 public class Main {
 	public Main() {
-		if(!glfwInit()) //initializes GLFW r
+		if(!glfwInit()) //initializes GLFW r | Dylan
 		{
 			System.err.println("GLFW Failed to initialize");
 			System.exit(1);
 		} 
 		
+		// Draw window
+		//width, height, name, isFullscreen, share | Dylan
 		long win = glfwCreateWindow(1600, 1800, "Window", 0, 0);
-					//width, height, name, isFullscreen, share
+					
 		
 		glfwShowWindow(win);
+		//make so window can have context and display graphics | Dylan
+		glfwMakeContextCurrent(win);
 		
-		glfwMakeContextCurrent(win); //make so window can have context
-		
-		GL.createCapabilities();//creating a context 
-		//textures must be created below here
+		//creating a context | Dylan
+		GL.createCapabilities();
+		//textures MUST be created below here | Dylan
 		
 		glEnable(GL_TEXTURE_2D);
 		
 		float[] vertices = new float[]{
-				-0.5f, 0.5f, 0, //TL		0
+				-0.5f, 0.5f, 0, //TL		0 
 					0.5f, 0.5f, 0, //TR		1
 					0.5f, -0.5f, 0, //BR 	2
 					-0.5f, -0.5f, 0, //BL 	3
@@ -47,14 +51,19 @@ public class Main {
 		Texture tex = new Texture("./resource/playertest.png");
 		Texture tex2 = new Texture("./resource/player2.png");
 		
-		while(!glfwWindowShouldClose(win)) { //while not closed
+		
+		//Keyboard Input | Jesus
+		while(!glfwWindowShouldClose(win)) { 
+			//While window not closed, if ESC then exit | Dylan + Jesus
 			if(glfwGetKey(win, GLFW_KEY_ESCAPE) == GL_TRUE) {
 				glfwSetWindowShouldClose(win, true);
 			}
 			
 			glfwPollEvents();
 			
-			glClear(GL_COLOR_BUFFER_BIT); //set all pixels to black
+			//set all pixels to black, clears screen essentially | Dylan
+			glClear(GL_COLOR_BUFFER_BIT); 
+			
 			//glClearColor(r,g,b);  //clear to colors
 			
 			if(glfwGetKey(win, GLFW_KEY_E) == GL_TRUE) {
