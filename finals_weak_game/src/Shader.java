@@ -4,10 +4,14 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.nio.FloatBuffer;
+
+import org.joml.Matrix4f;
+import org.lwjgl.BufferUtils;
 public class Shader {
 	private int program;
-	private int vertex_shader; //proccess all the vertecies that shader takes
-	private int fragment_shader; //gives things color
+	private int vertex_shader; //process all the vertices that shader takes | Dylan
+	private int fragment_shader; //gives things color | Dylan
 	
 	public Shader(String filename){
 		program  = glCreateProgram();
@@ -17,8 +21,8 @@ public class Shader {
 		
 		glCompileShader(vertex_shader);
 		
-		if(glGetShaderi(vertex_shader, GL_COMPILE_STATUS)  != 1){ //is there a problem getting shader
-			System.err.println(glGetShaderInfoLog(vertex_shader)); //prints what is wrong
+		if(glGetShaderi(vertex_shader, GL_COMPILE_STATUS)  != 1){ //Check if there a problem getting shader | Dylan
+			System.err.println(glGetShaderInfoLog(vertex_shader)); //prints what is wrong | Dylan
 			System.exit(1);;
 		}
 		
@@ -27,7 +31,7 @@ public class Shader {
 		
 		glCompileShader(fragment_shader);
 		
-		if(glGetShaderi(fragment_shader, GL_COMPILE_STATUS)  != 1){ //is there a problem getting shader
+		if(glGetShaderi(fragment_shader, GL_COMPILE_STATUS)  != 1){ //Check if there is a problem getting shader
 			System.err.println(glGetShaderInfoLog(fragment_shader)); //prints what is wrong
 			System.exit(1);;
 		}
@@ -56,11 +60,24 @@ public class Shader {
 	}
 	
 	public void setUniform(String name, int value){
-		//uniform variable is stored in graphics card
+		//uniform variable is stored in graphics card | Dylan
 		int location = glGetUniformLocation(program, name);
-		//is location valid
+		//is location valid | Dylan
 		if(location != -1){
 			glUniform1i(location, value);
+		}
+	}
+		
+	public void setUniform(String name, Matrix4f value){
+		//uniform variable is stored in graphics card | Dylan
+		int location = glGetUniformLocation(program, name);
+		// 4x4 of Data, allow us to hold all info about scale, rotation, projection | Jesus
+		FloatBuffer buffer = BufferUtils.createFloatBuffer(16);
+		value.get(buffer);
+		
+		//is location valid | Dylan
+		if(location != -1){
+			glUniformMatrix4fv(location, false, buffer);
 		}
 	}
 	
