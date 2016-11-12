@@ -1,3 +1,4 @@
+package render;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*; //get access to samplers
 
@@ -20,7 +21,7 @@ public class Texture {
 		BufferedImage bi;
 
 		try {
-			bi = ImageIO.read(new File(filename));
+			bi = ImageIO.read(new File("./resource/"+filename));
 			width = bi.getWidth();
 			height = bi.getHeight();
 			

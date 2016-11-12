@@ -6,8 +6,15 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.opengl.GL;
 
+import render.Camera;
+import render.Model;
+import render.Shader;
+import render.Texture;
+import world.TileRenderer;
+
 public class Main {
 	public Main() {
+		Window.setCallbacks();
 		if(!glfwInit()) //initializes GLFW r | Dylan
 		{
 			System.err.println("GLFW Failed to initialize");
@@ -16,53 +23,34 @@ public class Main {
 		
 		// Draw window
 		Window win = new Window();
-//		Way to override screen size
-		win.setSize(100, 100);
-		
+		//Window Size | Jesus
+		win.setSize(1280, 720);
+		// If you want to see full screen, change the setsize() resolution to
+		// your monitors resolution and uncomment the next line
+		//win.setFullScreen(true);
 		win.createWindow("Finals Weak");
+		
 		
 		//creating a context | Dylan
 		GL.createCapabilities();
 		//textures MUST be created below here | Dylan
-		
 		//Create camera | Jesus
-		Camera camera = new Camera(1800, 1600);
+		Camera camera = new Camera(win.getWidth(), win.getHeight());
 		
 		glEnable(GL_TEXTURE_2D);
 		
-		float[] vertices = new float[]{
-				-0.5f, 0.5f, 0, //TL		0 
-					0.5f, 0.5f, 0, //TR		1
-					0.5f, -0.5f, 0, //BR 	2
-					-0.5f, -0.5f, 0, //BL 	3
-		};
+		TileRenderer tiles = new TileRenderer();
 		
-		
-		float[] texture = new float[]{
-				0,0,
-				1,0,
-				1,1,
-				0,1,
-		};
-		
-		int[] indices = new int[] {
-				0,1,2, //draw first triangle
-				2,3,0
-		};
-		
-		Model model = new Model(vertices, texture, indices);
 		Shader shader = new Shader("shader");
-		Texture tex = new Texture("./resource/playertest.png");
-		Texture tex2 = new Texture("./resource/player2.png");
-		
-		
+		Texture tex = new Texture("playertest.png");
+		Texture tex2 = new Texture("player2.png");
 		
 		
 		Matrix4f scale = new Matrix4f()
 				//Translate(Horizontal, Vertical, Z) | Jesus
-				.translate(new Vector3f (100,0,0))
+				.translate(new Vector3f (0,0,0))
 				// Scale value can be changed to make texture bigger | Jesus
-				.scale(128);
+				.scale(50);
 		
 		Matrix4f target = new Matrix4f();
 		
@@ -94,10 +82,11 @@ public class Main {
 				target = scale;
 				
 				//While window not closed, if ESC then exit | Dylan + Jesus
-//				if(glfwGetKey(win, GLFW_KEY_ESCAPE) == GL_TRUE) {
-//					glfwSetWindowShouldClose(win, true);
-//				}
-				glfwPollEvents();
+				//win.getInput().isMouseButtonDown(0)) for Mouse input
+				if(win.getInput().isKeyPressed(GLFW_KEY_ESCAPE)) { //This takes in one key at a time, so long pressing on a key will just be interpreted as one
+					glfwSetWindowShouldClose(win.getWindow(), true);
+				}
+				win.update();
 				
 				// Display FPS on Console | Jesus
 				if (frameTime >= 1.0) {
@@ -111,18 +100,9 @@ public class Main {
 				//set all pixels to black, clears screen essentially | Dylan
 				glClear(GL_COLOR_BUFFER_BIT); 
 				
-				//glClearColor(r,g,b);  //clear to colors
-				
-//				if(glfwGetKey(win, GLFW_KEY_E) == GL_TRUE) {
-//					tex = tex2;
-//				}
-				
-				//tex.bind();
-				shader.bind();
-				shader.setUniform("sampler", 0);
-				shader.setUniform("projection", camera.getProjection().mul(target));
-				tex.bind(0);
-				model.render();
+				for (int i = 0; i < 8; i++)
+					for (int j = 0; j < 4; j++)
+						tiles.renderTile((byte) 0, i, j, shader, scale, camera);
 				
 				win.swapBuffers();
 				frames++;
