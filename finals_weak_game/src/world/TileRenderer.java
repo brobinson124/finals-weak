@@ -51,7 +51,7 @@ public class TileRenderer {
 	
 	public void renderTile(byte id, int x, int y, Shader shader, Matrix4f world, Camera cam) {
 		shader.bind();
-		if (tileTextures.containsKey(Tile.tiles[id].getTexture())) {
+		if (tileTextures.containsKey(Tile.tiles[id].getTexture())) 
 			tileTextures.get(Tile.tiles[id].getTexture()).bind(0);
 			
 		Matrix4f tilePosition = new Matrix4f().translate(new Vector3f(x*2, y*2, 0));
@@ -65,7 +65,7 @@ public class TileRenderer {
 		model.render();
 		
 //		model.render
-		}
+
 	}
 
 }
