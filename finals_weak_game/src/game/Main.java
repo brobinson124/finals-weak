@@ -1,3 +1,4 @@
+package game;
 import static org.lwjgl.glfw.GLFW.*;
 // Import OpenGL for images | Jesus
 import static org.lwjgl.opengl.GL11.*;
@@ -7,6 +8,9 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 
+import entity.Player;
+import io.Timer;
+import io.Window;
 import render.Camera;
 import render.Model;
 import render.Shader;
@@ -27,7 +31,7 @@ public class Main {
 		// Draw window
 		Window win = new Window();
 		//Window Size | Jesus
-		win.setSize(1280, 720);
+		win.setSize(640, 480);
 		// If you want to see full screen, change the setsize() resolution to
 		// your monitors resolution and uncomment the next line
 		//win.setFullScreen(true);
@@ -45,8 +49,8 @@ public class Main {
 		TileRenderer tiles = new TileRenderer();
 		
 		Shader shader = new Shader("shader");
-		Texture tex = new Texture("playertest.png");
-		Texture tex2 = new Texture("player2.png");
+		//Texture tex = new Texture("grass.png");
+		//Texture tex2 = new Texture("player2.png");
 		
 		
 /*		Matrix4f scale = new Matrix4f()
@@ -62,7 +66,11 @@ public class Main {
 		
 		World world = new World();
 		
-		world.setTile(Tile.test2, 0, 0); //new vampire tile | Brooke
+		Player player = new Player();
+		
+		world.setTile(Tile.test3, 0, 0); //new vampire tile | Brooke
+		world.setTile(Tile.test2, 63, 63);
+		
 		
 		//camera.setPosition(new Vector3f(-100,0,0));
 		// Don't need above | Brooke 
@@ -99,25 +107,24 @@ public class Main {
 				}
 				
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_A)) {
-					camera.getPosition().sub(new Vector3f(5, 0, 0));
-				}
-				
-				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_D)) {
 					camera.getPosition().sub(new Vector3f(-5, 0, 0));
 				}
 				
-				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_W)) {
-					camera.getPosition().sub(new Vector3f(0, -5, 0));
+				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_D)) {
+					camera.getPosition().sub(new Vector3f(5, 0, 0));
 				}
 				
-				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_S)) {
+				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_W)) {
 					camera.getPosition().sub(new Vector3f(0, 5, 0));
 				}
 				
-				Window window = new Window();
-				window = win;
+				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_S)) {
+					camera.getPosition().sub(new Vector3f(0, -5, 0));
+				}
+		
+				player.update((float)frameCap, win, camera, world);
 				
-				world.correctCamera(camera, window);
+				world.correctCamera(camera, win);
 				
 				win.update();
 				
@@ -139,7 +146,9 @@ public class Main {
 			*/	
 				//replaced above with world | Brooke
 				
-				world.render(tiles, shader, camera);
+				world.render(tiles, shader, camera, win);
+				
+				player.render(shader, camera);
 				
 				win.swapBuffers();
 				frames++;

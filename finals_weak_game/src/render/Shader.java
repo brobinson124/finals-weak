@@ -69,6 +69,14 @@ public class Shader {
 		}
 	}
 		
+	protected void finalize() {
+		glDetachShader(program, vertex_shader);
+		glDetachShader(program, fragment_shader);
+		glDeleteShader(vertex_shader);
+		glDeleteShader(fragment_shader);
+		glDeleteProgram(program);
+	}
+	
 	public void setUniform(String name, Matrix4f value){
 		//uniform variable is stored in graphics card | Dylan
 		int location = glGetUniformLocation(program, name);

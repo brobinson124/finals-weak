@@ -1,3 +1,4 @@
+package io;
 import static org.lwjgl.glfw.GLFW.*;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
@@ -20,7 +21,7 @@ public class Window {
 
 	public Window() {
 		
-		setSize(1800, 1600);
+		setSize(640, 480);
 		setFullScreen(false);
 		
 		

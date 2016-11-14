@@ -65,6 +65,12 @@ public class Model {
 		glDisableVertexAttribArray(1);
 	}
 	
+	protected void finalize() {
+		glDeleteBuffers(vertex_id);
+		glDeleteBuffers(texture_id);
+		glDeleteBuffers(indices_id);
+	}
+	
 	private FloatBuffer createBuffer(float[] data){
 		FloatBuffer buffer = BufferUtils.createFloatBuffer(data.length);
 		buffer.put(data);

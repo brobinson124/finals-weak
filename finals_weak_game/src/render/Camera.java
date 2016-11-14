@@ -22,10 +22,14 @@ public class Camera {
 	public Vector3f getPosition() { return position; }
 
 	public Matrix4f getProjection(){
-		Matrix4f target = new Matrix4f();
-		Matrix4f pos = new Matrix4f().setTranslation(position);
+		//Matrix4f target = new Matrix4f(); //we are allocating nothing
+		//Matrix4f pos = new Matrix4f().setTranslation(position);
 				
-		target = projection.mul(pos, target);
-		return target;
+		//target = projection.mul(pos, target);
+		//return target;
+		
+		//the above code allocates twice as much as we need | Brooke
+		
+		return projection.translate(position, new Matrix4f());
 	}
 }
