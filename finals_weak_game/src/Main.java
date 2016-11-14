@@ -114,7 +114,10 @@ public class Main {
 					camera.getPosition().sub(new Vector3f(0, 5, 0));
 				}
 				
-				world.correctCamera(camera, win);
+				Window window = new Window();
+				window = win;
+				
+				world.correctCamera(camera, window);
 				
 				win.update();
 				

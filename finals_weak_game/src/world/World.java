@@ -35,15 +35,15 @@ public class World {
 		}
 	}
 	
-	public void correctCamera(Camera camera, Window win){
+	public void correctCamera(Camera camera, Window window){
 		Vector3f pos = camera.getPosition();
 		
 		int w = -width * scale * 2; //we take the width of the level and multiple to get us actual scale of box
 		int h = height * scale * 2; //And this gives us the exact scale of our world | Brooke
 	
-		if(pos.x > -(win.getWidth()/2)+scale){
-			pos.x = -(win.getWidth()/2)+scale;
-		}
+		if(pos.x > -(window.getWidth()/2)+scale)
+			pos.x = -(window.getWidth()/2)+scale;
+		
 	}
 	
 	public void setTile(Tile tile, int x, int y) {
