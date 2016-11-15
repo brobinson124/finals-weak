@@ -4,10 +4,12 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 
+import collision.AABB;
 import entity.Player;
 import io.Timer;
 import io.Window;
@@ -22,6 +24,8 @@ import world.World;
 public class Main {
 	public Main() {
 		Window.setCallbacks();
+		
+		
 		if(!glfwInit()) //initializes GLFW r | Dylan
 		{
 			System.err.println("GLFW Failed to initialize");
@@ -40,6 +44,8 @@ public class Main {
 		
 		//creating a context | Dylan
 		GL.createCapabilities();
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);//for transparent images
 		//textures MUST be created below here | Dylan
 		//Create camera | Jesus
 		Camera camera = new Camera(win.getWidth(), win.getHeight());
@@ -68,8 +74,9 @@ public class Main {
 		
 		Player player = new Player();
 		
-		world.setTile(Tile.test3, 0, 0); //new vampire tile | Brooke
-		world.setTile(Tile.test2, 63, 63);
+		//world.setTile(Tile.test2, 0, 0); //new vampire tile | Brooke
+		world.setTile(Tile.test2, 5, 0);
+		world.setTile(Tile.test2, 6, 0);
 		
 		
 		//camera.setPosition(new Vector3f(-100,0,0));
@@ -106,25 +113,25 @@ public class Main {
 					glfwSetWindowShouldClose(win.getWindow(), true);
 				}
 				
-				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_A)) {
-					camera.getPosition().sub(new Vector3f(-5, 0, 0));
-				}
-				
-				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_D)) {
-					camera.getPosition().sub(new Vector3f(5, 0, 0));
-				}
-				
-				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_W)) {
-					camera.getPosition().sub(new Vector3f(0, 5, 0));
-				}
-				
-				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_S)) {
-					camera.getPosition().sub(new Vector3f(0, -5, 0));
-				}
+//				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_A)) {
+//					camera.getPosition().sub(new Vector3f(-5, 0, 0));
+//				}
+//				
+//				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_D)) {
+//					camera.getPosition().sub(new Vector3f(5, 0, 0));
+//				}
+//				
+//				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_W)) {
+//					camera.getPosition().sub(new Vector3f(0, 5, 0));
+//				}
+//				
+//				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_S)) {
+//					camera.getPosition().sub(new Vector3f(0, -5, 0));
+//				}
 		
 				player.update((float)frameCap, win, camera, world);
 				
-				world.correctCamera(camera, win);
+				//world.correctCamera(camera, win);
 				
 				win.update();
 				

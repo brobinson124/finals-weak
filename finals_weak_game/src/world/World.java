@@ -1,7 +1,9 @@
 package world;
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 
+import collision.AABB;
 import io.Window;
 import render.Camera;
 import render.Shader;
@@ -13,14 +15,18 @@ public class World {
 	private int height;
 	private int scale; 
 	
+	private AABB[] bounding_boxes;
+	
 	private Matrix4f world;
 	
 	public World() {
 		width = 64;
 		height = 64;
-		scale = 16; 
+		scale = 32; 
 		
 		tiles = new byte[width * height];
+		
+		bounding_boxes = new AABB[width*height];
 		
 		world = new Matrix4f().setTranslation(new Vector3f(0));
 		world.scale(scale); //we want the tiles to be 32 X 32 | Brooke
@@ -67,7 +73,12 @@ public class World {
 	}
 	
 	public void setTile(Tile tile, int x, int y) {
-		tiles[x+y * width] = tile.getID();
+		tiles[x + y * width] = tile.getID();
+		if(tile.isSolid()) {
+			bounding_boxes[x + y * width] = new AABB(new Vector2f(x*2, -y*2), new Vector2f(1,1));
+		}else{
+			bounding_boxes[x + y * width] = null;
+		}
 		
 	}
 
@@ -78,6 +89,19 @@ public class World {
 			return null;
 		}
 		
+	}
+	
+	public AABB getTileBoundingBox(int x, int y){
+		try { //we are likely to get array error
+			return bounding_boxes[x + y * width]; 
+		}catch(ArrayIndexOutOfBoundsException e){
+			return null;
+		}
+		
+	}
+	
+	public int getScale() {
+		return scale; 
 	}
 	
 
