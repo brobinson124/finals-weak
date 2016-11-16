@@ -3,20 +3,13 @@ import static org.lwjgl.glfw.GLFW.*;
 // Import OpenGL for images | Jesus
 import static org.lwjgl.opengl.GL11.*;
 
-import org.joml.Matrix4f;
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 
-import collision.AABB;
 import entity.Player;
 import io.Timer;
 import io.Window;
 import render.Camera;
-import render.Model;
 import render.Shader;
-import render.Texture;
 import world.Tile;
 import world.TileRenderer;
 import world.World;

@@ -2,8 +2,8 @@ package render;
 import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL13.*; //get access to samplers
 
-import java.io.File;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.nio.ByteBuffer;
 
