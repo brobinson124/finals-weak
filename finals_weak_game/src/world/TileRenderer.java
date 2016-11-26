@@ -13,7 +13,7 @@ import render.Texture;
 public class TileRenderer {
 	private HashMap<String, Texture> tileTextures;
 	
-	private Model model;
+	private Model tileModel;
 	
 	public TileRenderer() {
 		tileTextures = new HashMap<String, Texture>();
@@ -37,7 +37,7 @@ public class TileRenderer {
 				2,3,0
 		};
 		
-		model = new Model(vertices, texture, indices);
+		tileModel = new Model(vertices, texture, indices);
 		
 		for (int i = 0; i < Tile.tiles.length; i++){
 			if (Tile.tiles[i] != null){
@@ -62,7 +62,7 @@ public class TileRenderer {
 		
 		shader.setUniform("sampler", 0);
 		shader.setUniform("projection", target);
-		model.render();
+		tileModel.render();
 		
 //		model.render
 

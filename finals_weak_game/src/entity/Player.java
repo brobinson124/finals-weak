@@ -73,7 +73,7 @@ public class Player {
 		
 		AABB[] boxes = new AABB[25];
 		for(int i = 0; i < 5; i++){
-			for(int j = 0; j< 5; i++){
+			for(int j = 0; j< 5; j++){
 				boxes[i + j * 5] = world.getTileBoundingBox(
 							(int)(((transform.pos.x / 2) + 0.5f) - (5/2)) + i,
 							(int)(((-transform.pos.y / 2) + 0.5f) - (5/2)) + j

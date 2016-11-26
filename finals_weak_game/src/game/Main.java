@@ -131,7 +131,7 @@ public class Main {
 		
 				player.update((float)frameCap, win, camera, world);
 				
-				//world.correctCamera(camera, win);
+				world.correctCamera(camera, win);
 				
 				win.update();
 				

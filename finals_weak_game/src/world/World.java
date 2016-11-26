@@ -22,7 +22,7 @@ public class World {
 	public World() {
 		width = 64;
 		height = 64;
-		scale = 32; 
+		scale = 16; 
 		
 		tiles = new byte[width * height];
 		
@@ -39,8 +39,8 @@ public class World {
 //			}
 //		}
 		
-		int posX = ((int)cam.getPosition().x + (window.getWidth()/2)) / (scale * 2);//center of screen w/ offset of world
-		int posY = ((int)cam.getPosition().y - (window.getHeight()/2)) / (scale * 2);//center of screen w/ offset of world
+		int posX = (int)cam.getPosition().x / (scale*2);//((int)cam.getPosition().x + (window.getWidth()/2)) / (scale * 2);//center of screen w/ offset of world
+		int posY = (int)cam.getPosition().y / (scale*2);//((int)cam.getPosition().y - (window.getHeight()/2)) / (scale * 2);//center of screen w/ offset of world
 
 		for(int i = 0; i < view; i++){
 			for(int j = 0; j <view; j++){
@@ -65,6 +65,7 @@ public class World {
 			pos.x = -(win.getWidth()/2)+scale; //left
 		if(pos.x < w + (win.getWidth()/2) + scale); //the scale prevents the view from stopping at half the tile
 			pos.x = w + (win.getWidth()/2) + scale;
+			
 		if(pos.y < (win.getHeight()/2)-scale)
 			pos.y = (win.getHeight()/2)-scale;
 		if(pos.y > h - (win.getHeight()/2) - scale)
