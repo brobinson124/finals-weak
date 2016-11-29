@@ -20,8 +20,6 @@ public class Model {
 	public Model(float[] vertices, float[] texture_coords, int[] indices) {
 		draw_count = indices.length;//amount of vertices we draw with | Dylan
 		
-		
-		
 		vertex_id = glGenBuffers();//generate vertex ID | Dylan
 		glBindBuffer(GL_ARRAY_BUFFER, vertex_id);
 		glBufferData(GL_ARRAY_BUFFER, createBuffer(vertices), GL_STATIC_DRAW);
@@ -54,8 +52,7 @@ public class Model {
 		glBindBuffer(GL_ARRAY_BUFFER, texture_id);
 		glVertexAttribPointer(1, 2, GL_FLOAT, false, 0, 0);
 		
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices_id);
-		
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indices_id);	
 		glDrawElements(GL_TRIANGLES, draw_count, GL_UNSIGNED_INT, 0); //draw elements | Dylan
 		
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -65,10 +62,11 @@ public class Model {
 		glDisableVertexAttribArray(1);
 	}
 	
-	protected void finalize() {
+	protected void finalize() throws Throwable {
 		glDeleteBuffers(vertex_id);
 		glDeleteBuffers(texture_id);
 		glDeleteBuffers(indices_id);
+		super.finalize();
 	}
 	
 	private FloatBuffer createBuffer(float[] data){

@@ -1,11 +1,11 @@
 package world;
 
 public class Tile {
-	public static Tile tiles[] = new Tile[16];
+	public static Tile tiles[] = new Tile[255];
 	
 	public static byte num_tiles = 0;
 	
-	public static final Tile test_tile = new Tile("grass");
+	public static final Tile test1 = new Tile("grass");
 	public static final Tile test3 = new Tile("playertest");
 	public static final Tile test2 = new Tile("player2").setSolid(); //collision
 	

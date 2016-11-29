@@ -41,8 +41,8 @@ public class Window {
 					(vid.width()-width)/2,
 					(vid.height()-height)/2);
 			
-			glfwShowWindow(window);
-		}
+		}	
+		glfwShowWindow(window);
 		
 		glfwMakeContextCurrent(window);
 		

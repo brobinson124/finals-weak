@@ -71,12 +71,16 @@ public class Main {
 		// Replaced the above matrix with the world | Brooke
 		
 		World world = new World();
+		world.calculateView(win);
 		
 		Player player = new Player();
 		
-		//world.setTile(Tile.test2, 0, 0); //new vampire tile | Brooke
-		world.setTile(Tile.test2, 5, 0);
-		world.setTile(Tile.test2, 6, 0);
+		world.setTile(Tile.test2, 0, 0); //new vampire tile | Brooke
+		
+		//world.setTile(Tile.test2, 5, 0);
+		//world.setTile(Tile.test2, 6, 0);
+		//world.setTile(Tile.test2, 4, 8);
+		//world.setTile(Tile.test2, 14, 14);
 		
 		
 		//camera.setPosition(new Vector3f(-100,0,0));
@@ -131,14 +135,14 @@ public class Main {
 		
 				player.update((float)frameCap, win, camera, world);
 				
-				world.correctCamera(camera, win);
+				//world.correctCamera(camera, win);
 				
 				win.update();
 				
 				// Display FPS on Console | Jesus
 				if (frameTime >= 1.0) {
 					frameTime = 0;
-					System.out.println("FPS: " + frames);
+					//System.out.println("FPS: " + frames);
 					frames = 0;
 				}
 				

@@ -71,6 +71,8 @@ public class Player {
 			transform.pos.add(new Vector3f(0, -10*delta, 0));
 		}
 		
+		bounding_box.getCenter().set(transform.pos.x, transform.pos.y);
+		
 		AABB[] boxes = new AABB[25];
 		for(int i = 0; i < 5; i++){
 			for(int j = 0; j< 5; j++){
@@ -100,10 +102,13 @@ public class Player {
 			Collision data = bounding_box.getCollision(box);
 			if(data.isIntersecting){
 				bounding_box.correctPosition(box, data);
+				transform.pos.set(bounding_box.getCenter(), 0);
 			}
 		}
 		
-		camera.setPosition(transform.pos.mul(-world.getScale(), new Vector3f()));
+		camera.getPosition().lerp(transform.pos.mul(-world.getScale(), new Vector3f()), 0.8f); // changes how fast the camera keeps up with the player
+		//makes the camera more smooth
+		//camera.setPosition(transform.pos.mul(-world.getScale(), new Vector3f()));
 	}
 	
 	public void render(Shader shader, Camera camera) {
