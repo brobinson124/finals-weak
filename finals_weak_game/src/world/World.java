@@ -1,4 +1,10 @@
 package world;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+
+import javax.imageio.ImageIO;
+
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
@@ -9,7 +15,7 @@ import render.Camera;
 import render.Shader;
 
 public class World {
-	private final int view = 24;
+	private final int view = 32;
 	private byte[] tiles; //it is type byte because that is how we render files | Brooke
 	private int width;
 	private int height;
@@ -21,9 +27,46 @@ public class World {
 	
 	private Matrix4f world;
 	
+	public World(String world) {
+		//this constructor will take an image and make a 
+		//level based off of it
+		try {
+			BufferedImage tile_sheet = ImageIO.read(new File("./levels/" + world + "_tiles.png"));
+			//BufferedImage entity_sheet = ImageIO.read(new File("./levels/" + world + "_entity.png"));
+			
+			width = tile_sheet.getWidth();
+			height = tile_sheet.getHeight();
+			scale = 16;
+			
+			this.world = new Matrix4f().setTranslation(new Vector3f(0));
+			this.world.scale(scale);
+			
+			int[] colorTileSheet = tile_sheet.getRGB(0,0, width, height, null, 0, width);
+			//will return all pixels in an image. 
+			
+			tiles = new byte[width * height];
+			bounding_boxes = new AABB[width * height];
+			
+			for(int y = 0; y < height; y++){
+				for(int x =0; x < 0; x++){
+					int red = (colorTileSheet[x + y * width] >> 16) & 0XFF;
+					
+					Tile t = Tile.tiles[red]; //will cause array out of bounds error
+					
+					if (t != null){
+						setTile(t, x, y);
+					}
+				}
+			}
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public World() {
-		width = 64;
-		height = 64;
+		width = 32;
+		height = 32;
 		scale = 16; 
 		
 		tiles = new byte[width * height];
@@ -46,8 +89,10 @@ public class World {
 //			}
 //		}
 		
-		int posX = (int)cam.getPosition().x / (scale*2);//((int)cam.getPosition().x + (window.getWidth()/2)) / (scale * 2);//center of screen w/ offset of world
-		int posY = (int)cam.getPosition().y / (scale*2);//((int)cam.getPosition().y - (window.getHeight()/2)) / (scale * 2);//center of screen w/ offset of world
+		//int posX = (int)cam.getPosition().x / (scale);//
+		int posX = ((int)cam.getPosition().x + (window.getWidth()/2)) / (scale);//center of screen w/ offset of world
+		//int posY = (int)cam.getPosition().y / (scale);//
+		int posY = ((int)cam.getPosition().y - (window.getHeight()/2)) / (scale);//center of screen w/ offset of world
 		
 		//System.out.println("X: " + posX);
 		//System.out.println("Y: " + posY);
@@ -83,7 +128,7 @@ public class World {
 			System.out.println("new X: " + pos.x);
 		}
 		//if(pos.x < w + (win.getWidth()/2) + scale); //the scale prevents the view from stopping at half the tile
-		//	pos.x = w + (win.getWidth()/2) + scale;			
+			//pos.x = w + (win.getWidth()/2) + scale;			
 		if(pos.y < (win.getHeight()/2)-scale)
 			pos.y = (win.getHeight()/2)-scale;
 		if(pos.y > h - (win.getHeight()/2) - scale)
