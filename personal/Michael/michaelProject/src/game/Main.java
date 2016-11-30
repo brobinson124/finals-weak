@@ -4,10 +4,13 @@ import static org.lwjgl.glfw.GLFW.*;
 import static org.lwjgl.opengl.GL11.*;
 
 import org.joml.Matrix4f;
+import org.joml.Vector2f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 
+import collision.AABB;
+import entity.Player;
 import world.Tile;
 import world.TileRenderer;
 import world.World;
@@ -18,6 +21,13 @@ public class Main {
 	
 	public Main() {
 		Window.setCallbacks();
+		
+//		AABB box1 = new AABB(new Vector2f(0,0), new Vector2f(1,1));
+//		AABB box2 = new AABB(new Vector2f(2,0), new Vector2f(1,1));
+//		
+//		if(box1.isIntersecting(box2)){
+//			System.out.println("The boxes are intersecting");
+//		}
 		
 		if(glfwInit() != true) {
 			System.err.println("GLFW failed to initialize!");
@@ -63,8 +73,13 @@ public class Main {
 		
 		World world = new World();
 		
-		world.setTile(Tile.test2, 0, 0);
-		world.setTile(Tile.test2, 63, 63);
+		Player player = new Player();
+		
+		world.setTile(Tile.test2, 5, 0);
+		world.setTile(Tile.test2, 6, 0);
+		world.setTile(Tile.test2, 7, 0);
+		world.setTile(Tile.test2, 7, 1);
+		world.setTile(Tile.test2, 7, 2);
 		
 //		Matrix4f scale = new Matrix4f()
 //				.translate(new Vector3f(0,0,0))
@@ -103,21 +118,8 @@ public class Main {
 					glfwSetWindowShouldClose(win.getWindow(), true);
 				}
 				
-				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_A)) {
-					camera.getPosition().sub(new Vector3f(-5,0,0));
-				}
 				
-				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_D)) {
-					camera.getPosition().sub(new Vector3f(5,0,0));
-				}
-				
-				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_W)) {
-					camera.getPosition().sub(new Vector3f(0,5,0));
-				}
-				
-				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_S)) {
-					camera.getPosition().sub(new Vector3f(0,-5,0));
-				}
+				player.update((float)frame_cap,  win,  camera, world);
 				
 				world.correctCamera(camera, win);
 				
@@ -145,7 +147,9 @@ public class Main {
 //					}
 //				}
 				
-				world.render(tiles, shader, camera);
+				world.render(tiles, shader, camera, win);
+				
+				player.render(shader,  camera);
 				
 				win.swapBuffers();
 				frames++;

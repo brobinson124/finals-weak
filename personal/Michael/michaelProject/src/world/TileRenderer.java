@@ -14,10 +14,10 @@ public class TileRenderer {
 	public TileRenderer() {
 		tile_textures = new HashMap<String, Texture>();
 		float[] vertices = new float[] {
-				-0.5f, 0.5f, 0, 	//top left		0
-				0.5f, 0.5f, 0, 		//top right		1
-				0.5f, -0.5f, 0, 	//bottom right	2
-				-0.5f, -0.5f, 0, 	//bottom left	3
+				-1f, 1f, 0, 	//top left		0
+				1f, 1f, 0, 		//top right		1
+				1f, -1f, 0, 	//bottom right	2
+				-1f, -1f, 0, 	//bottom left	3
 		};
 		
 		float[] texture = new float[] {
@@ -44,13 +44,13 @@ public class TileRenderer {
 		}
 	}
 	
-	public void renderTile(byte id, int x, int y, Shader shader, Matrix4f world, Camera cam){
+	public void renderTile(Tile tile, int x, int y, Shader shader, Matrix4f world, Camera cam){
 		shader.bind();
-		if(tile_textures.containsKey(Tile.tiles[id].getTexture())){
-			tile_textures.get(Tile.tiles[id].getTexture()).bind(0);
+		if(tile_textures.containsKey(tile.getTexture())){
+			tile_textures.get(tile.getTexture()).bind(0);
 		}
 		
-		Matrix4f tile_pos = new Matrix4f().translate( new Vector3f(x*2, y*2, 0));
+		Matrix4f tile_pos = new Matrix4f().translate( new Vector3f(x*2, y*2, 0));//x and y used to be *2, but I had to change it
 		Matrix4f target = new Matrix4f();
 		
 		cam.getProjection().mul(world, target);
