@@ -8,6 +8,7 @@ import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 
+import world.Tile;
 import world.TileRenderer;
 import world.World;
 import render.*;
@@ -62,13 +63,16 @@ public class Main {
 		
 		World world = new World();
 		
+		world.setTile(Tile.test2, 0, 0);
+		world.setTile(Tile.test2, 63, 63);
+		
 //		Matrix4f scale = new Matrix4f()
 //				.translate(new Vector3f(0,0,0))
 //				.scale(16);
 //		
 //		Matrix4f target = new Matrix4f();
 		
-		camera.setPosition(new Vector3f(-100,0,0));
+		//camera.setPosition(new Vector3f(-100,0,0));
 		
 		double frame_cap = 1.0/60.0;
 		
@@ -114,6 +118,8 @@ public class Main {
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_S)) {
 					camera.getPosition().sub(new Vector3f(0,-5,0));
 				}
+				
+				world.correctCamera(camera, win);
 				
 				glfwPollEvents();
 				//win.update();
