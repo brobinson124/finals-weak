@@ -106,7 +106,7 @@ public class Player {
 			}
 		}
 		
-		camera.getPosition().lerp(transform.pos.mul(-world.getScale(), new Vector3f()), 0.8f); // changes how fast the camera keeps up with the player
+		camera.getPosition().lerp(transform.pos.mul(-world.getScale(), new Vector3f()), 0.2f); // changes how fast the camera keeps up with the player
 		//makes the camera more smooth
 		//camera.setPosition(transform.pos.mul(-world.getScale(), new Vector3f()));
 	}
