@@ -10,7 +10,9 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
 
 import collision.AABB;
+import entity.Entity;
 import entity.Player;
+import entity.Transform;
 import world.Tile;
 import world.TileRenderer;
 import world.World;
@@ -46,6 +48,8 @@ public class Main {
 		
 		TileRenderer tiles = new TileRenderer();
 		
+		Entity.InitAsset();
+		
 //		float[] vertices = new float[] {
 //				-0.5f, 0.5f, 0, 	//top left		0
 //				0.5f, 0.5f, 0, 		//top right		1
@@ -71,23 +75,20 @@ public class Main {
 		
 		//Texture tex = new Texture("./resources/stoneTex.jpg");
 		
-		World world = new World();
-		
-		Player player = new Player();
-		
-		world.setTile(Tile.test2, 5, 0);
-		world.setTile(Tile.test2, 6, 0);
-		world.setTile(Tile.test2, 7, 0);
-		world.setTile(Tile.test2, 7, 1);
-		world.setTile(Tile.test2, 7, 2);
+		World world = new World("test_level");
+//		Transform t = new Transform();
+//		t.scale.x = 1;
+//		t.scale.y = 1;
+//		Player player = new Player(t);
+
 		
 //		Matrix4f scale = new Matrix4f()
 //				.translate(new Vector3f(0,0,0))
 //				.scale(16);
 //		
 //		Matrix4f target = new Matrix4f();
-		
-		//camera.setPosition(new Vector3f(-100,0,0));
+//		
+//		camera.setPosition(new Vector3f(-100,0,0));
 		
 		double frame_cap = 1.0/60.0;
 		
@@ -119,7 +120,7 @@ public class Main {
 				}
 				
 				
-				player.update((float)frame_cap,  win,  camera, world);
+				world.update((float)frame_cap,  win,  camera);
 				
 				world.correctCamera(camera, win);
 				
@@ -149,13 +150,15 @@ public class Main {
 				
 				world.render(tiles, shader, camera, win);
 				
-				player.render(shader,  camera);
+				//player.render(shader,  camera, world);
 				
 				win.swapBuffers();
 				frames++;
 			}
 			
 		}
+		
+		Entity.deleteAsset();
 		
 		glfwTerminate();
 	}

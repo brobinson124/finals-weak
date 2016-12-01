@@ -1,11 +1,23 @@
 package world;
 
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import collision.AABB;
+import entity.Entity;
+import entity.Player;
+import entity.Transform;
 import io.Window;
+import render.Animation;
 import render.Camera;
 import render.Shader;
 
@@ -13,15 +25,71 @@ public class World {
 	private final int view = 32;
 	private byte[] tiles;
 	private AABB[] bounding_boxes;
+	private List<Entity> entities;
 	private int width;
 	private int height;
 	private int scale;
 	
 	private Matrix4f world;
 	
+	public World(String world){
+		try {
+			BufferedImage tile_sheet = ImageIO.read(new File("./resources/" + world + "_tiles.png"));
+			//BufferedImage entity_sheet = ImageIO.read(new File("./resources/" + world + "_entity.png"));
+		
+			width = tile_sheet.getWidth();
+			height = tile_sheet.getHeight();
+			scale = 32;
+			
+			this.world = new Matrix4f().setTranslation(new Vector3f(0));
+			this.world.scale(scale);
+			
+			int[] colorTileSheet = tile_sheet.getRGB(0,0, width, height, null, 0, width);
+			
+			tiles = new byte[width* height];
+			bounding_boxes = new AABB[width*height];
+			entities = new ArrayList<Entity>();
+			
+			
+			for(int y = 0; y< height; y++){
+				for (int x = 0; x < width; x++){
+					int red = (colorTileSheet[x + y * width] >> 16) & 0xFF;
+					
+					
+					Tile t;
+					try {
+						t = Tile.tiles[red];
+					}catch(ArrayIndexOutOfBoundsException e){
+						t = null;
+					}
+					
+					if ( t != null){
+						setTile(t, x, y);
+					}
+				}
+			}
+			
+			entities.add(new Player(new Transform()));
+			
+			Transform t = new Transform();
+			t.pos.x = 0;
+			t.pos.y = -4;
+			
+			entities.add(new Entity(new Animation(1,1, "an"), t) {
+				@Override
+				public void update(float delta, Window window, Camera camera, World world){
+					move(new Vector2f(5*delta,0));
+				}
+			});
+			
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	public World() {
-		width = 64;
-		height = 64;
+		width = 32;
+		height = 32;
 		scale = 32;
 		
 		tiles = new byte[width * height];
@@ -31,6 +99,8 @@ public class World {
 		world.scale(scale);
 	}
 	
+	public Matrix4f getWorldMatrix(){ return world; }
+	
 	public void render(TileRenderer render, Shader shader, Camera cam, Window window){
 //		for(int i = 0; i < height; i++) {
 //			for (int j = 0; j< width; j++){
@@ -38,8 +108,8 @@ public class World {
 //			}
 //		}
 		
-		int posX = ((int)cam.getPosition().x + (window.getWidth()/2)) / (scale); //scale used to be *2, I had to change it
-		int posY = ((int)cam.getPosition().y - (window.getHeight()/2)) / (scale); //scale used to be *2, I had to change it
+		int posX = ((int)cam.getPosition().x + (window.getWidth())) / (scale); //scale used to be *2, I had to change it
+		int posY = ((int)cam.getPosition().y - (window.getHeight())) / (scale); //scale used to be *2, I had to change it
 	
 		for(int i = 0; i < view; i++){
 			for (int j = 0; j < view; j++){
@@ -48,6 +118,24 @@ public class World {
 					render.renderTile(t, i-posX , -j-posY, shader, world, cam);
 				}
 			}
+		}
+		
+		for(Entity entity: entities){
+			entity.render(shader, cam, this);
+		}
+	}
+	
+	public void update(float delta, Window window, Camera camera){
+		for ( Entity entity: entities){
+			entity.update(delta,  window,  camera, this);
+		}
+		
+		for(int i = 0; i < entities.size(); i++){
+			entities.get(i).collideWithTiles(this);
+			for(int j = i+1; j < entities.size(); j++){
+				entities.get(i).collideWithEntity(entities.get(j));
+			}
+			entities.get(i).collideWithTiles(this);
 		}
 	}
 	
