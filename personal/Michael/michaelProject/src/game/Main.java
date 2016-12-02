@@ -79,6 +79,7 @@ public class Main {
 		//Texture tex = new Texture("./resources/stoneTex.jpg");
 		
 		World world = new World("test_level", camera);
+		world.calculateView(win);
 //		Transform t = new Transform();
 //		t.scale.x = 1;
 //		t.scale.y = 1;
@@ -114,6 +115,11 @@ public class Main {
 			time = time_2;
 			
 			while(unprocessed >= frame_cap){
+				if(win.hasResized()){
+					camera.setProjection(win.getWidth(), win.getHeight());
+					world.calculateView(win);
+					glViewport(0, 0, win.getWidth(), win.getHeight());
+				}
 				unprocessed -= frame_cap;
 				can_render = true;
 				
@@ -151,7 +157,7 @@ public class Main {
 //					}
 //				}
 				
-				world.render(tiles, shader, camera, win);
+				world.render(tiles, shader, camera);
 				
 				//player.render(shader,  camera, world);
 				

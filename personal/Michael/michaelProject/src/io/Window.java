@@ -25,6 +25,21 @@ public class Window {
 		});
 	}
 	
+	private void setLocalCallbacks(){
+		windowSizeCallback = new GLFWWindowSizeCallback(){
+			@Override
+			public void invoke(long argWindow, int argWidth, int argHeight) {
+				width = argWidth;
+				height = argHeight;
+				hasResized = true;
+				// TODO Auto-generated method stub
+				
+			}	
+		};
+		
+		glfwSetWindowSizeCallback(window, windowSizeCallback);
+	}
+	
 	public Window(){
 		setSize(649, 480);
 		setFullscreen(false);
@@ -51,6 +66,11 @@ public class Window {
 		glfwMakeContextCurrent(window);
 		
 		input = new Input(window);
+		setLocalCallbacks();
+	}
+	
+	public void cleanUp(){
+		windowSizeCallback.close();
 	}
 	
 	public boolean shouldClose() {

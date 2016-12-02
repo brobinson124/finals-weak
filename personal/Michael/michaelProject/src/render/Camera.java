@@ -10,7 +10,12 @@ public class Camera {
 	
 	public Camera(int width, int height) {
 		position = new Vector3f(0,0,0);
+		setProjection(width, height);
+	}
+	
+	public void setProjection(int width, int height){
 		projection = new Matrix4f().setOrtho2D(-width/2, width/2, -height/2, height/2);
+
 	}
 	
 	public void setPosition(Vector3f position) {
