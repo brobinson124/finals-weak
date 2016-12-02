@@ -80,6 +80,9 @@ public class Main {
 		
 		World world = new World("test_level", camera);
 		world.calculateView(win);
+		
+		world.setTile(Tile.coffee, 5, 0);
+		
 //		Transform t = new Transform();
 //		t.scale.x = 1;
 //		t.scale.y = 1;
