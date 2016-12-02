@@ -21,6 +21,7 @@ import io.*;
 
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.openal.AL;
+import org.newdawn.slick.openal.*;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.openal.SoundStore;
@@ -36,12 +37,12 @@ public class Main {
 		
 		Window.setCallbacks();
 		
-		try{
-        wavEffect = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/.wav"));
+		/*try{
+			wavEffect = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("./resources/sample.wav"));
 		}
 		catch (IOException e) {
 	        e.printStackTrace();
-	    }
+	    }*/
 		
 //		AABB box1 = new AABB(new Vector2f(0,0), new Vector2f(1,1));
 //		AABB box2 = new AABB(new Vector2f(2,0), new Vector2f(1,1));
@@ -73,7 +74,7 @@ public class Main {
 		Entity.InitAsset();
 		
 //		float[] vertices = new float[] {
-//				-0.5f, 0.5f, 0, 	//top left		0
+//				-0.5af, 0.5f, 0, 	//top left		0
 //				0.5f, 0.5f, 0, 		//top right		1
 //				0.5f, -0.5f, 0, 	//bottom right	2
 //				-0.5f, -0.5f, 0, 	//bottom left	3
@@ -100,7 +101,12 @@ public class Main {
 		World world = new World("test_level", camera);
 		world.calculateView(win);
 		
+		//world.setTile(Tile.circleTable, 5, 4);
+		
 		world.setTile(Tile.coffee, 5, 0);
+		
+		
+		
 		
 //		Transform t = new Transform();
 //		t.scale.x = 1;
