@@ -20,13 +20,13 @@ import render.*;
 import io.*;
 
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.openal.AL;
 import org.newdawn.slick.openal.Audio;
 import org.newdawn.slick.openal.AudioLoader;
 import org.newdawn.slick.openal.SoundStore;
 import org.newdawn.slick.util.ResourceLoader;
 
 import java.io.IOException;
+import java.util.Random;
 
 public class Main {
 	
@@ -36,12 +36,14 @@ public class Main {
 		
 		Window.setCallbacks();
 		
-		try{
-        wavEffect = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/.wav"));
-		}
-		catch (IOException e) {
-	        e.printStackTrace();
-	    }
+//		try{
+//        wavEffect = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/sample.wav"));
+//		}
+//		catch (IOException e) {
+//       e.printStackTrace();
+//	    }
+//		
+//		SoundStore.get().poll(0);
 		
 //		AABB box1 = new AABB(new Vector2f(0,0), new Vector2f(1,1));
 //		AABB box2 = new AABB(new Vector2f(2,0), new Vector2f(1,1));
@@ -100,7 +102,10 @@ public class Main {
 		World world = new World("test_level", camera);
 		world.calculateView(win);
 		
-		world.setTile(Tile.coffee, 5, 0);
+		int coffee_x = 3;
+		int coffee_y = 3;
+		
+		world.setTile(Tile.test2, coffee_x, coffee_y);
 		
 //		Transform t = new Transform();
 //		t.scale.x = 1;
@@ -150,10 +155,41 @@ public class Main {
 					glfwSetWindowShouldClose(win.getWindow(), true);
 				}
 				
-				if(win.getInput().isKeyPressed(GLFW_KEY_M)){
-					wavEffect.playAsSoundEffect(1.0f, 1.0f, false);
-				}
+				//if(win.getInput().isKeyPressed(GLFW_KEY_D)) {
+					Random rand = new Random();
+					int  n = rand.nextInt(4) + 1;
+					Random rand2 = new Random();
+					int n2 = rand2.nextInt(100) + 1; 
+					if (n2 % 20 == 0){
+						if (n <= 2){
+							if (n==1 && coffee_x!=32 && world.getTile(coffee_x+1, coffee_y)==Tile.test_tile){
+								world.setTile(Tile.test_tile, coffee_x, coffee_y);
+								coffee_x = coffee_x + 1; 
+							}
+							else if (n == 2 && coffee_x != 0 && world.getTile(coffee_x-1, coffee_y)==Tile.test_tile){
+								world.setTile(Tile.test_tile, coffee_x, coffee_y);
+								coffee_x = coffee_x - 1;
+							}
+							world.setTile(Tile.coffee, coffee_x, coffee_y);
+						}
+						else if (n > 2){
+							if(n == 3 && coffee_y != 32 && world.getTile(coffee_x, coffee_y+1)==Tile.test_tile){
+								world.setTile(Tile.test_tile, coffee_x, coffee_y);
+								coffee_y = coffee_y + 1;
+							}
+							else if (n == 4 && coffee_y !=0 && world.getTile(coffee_x, coffee_y-1)==Tile.test_tile){
+								world.setTile(Tile.test_tile, coffee_x, coffee_y);
+								coffee_y = coffee_y - 1;
+							}
+							world.setTile(Tile.coffee, coffee_x, coffee_y);
+						}
+					}
+				//}
 				
+//				if(win.getInput().isKeyPressed(GLFW_KEY_M)){
+//					wavEffect.playAsSoundEffect(1.0f, 1.0f, false);
+//				}
+//				
 				
 				world.update((float)frame_cap,  win,  camera);
 				
