@@ -19,10 +19,29 @@ import world.World;
 import render.*;
 import io.*;
 
+import org.lwjgl.opengl.GL11;
+import org.lwjgl.openal.AL;
+import org.newdawn.slick.openal.Audio;
+import org.newdawn.slick.openal.AudioLoader;
+import org.newdawn.slick.openal.SoundStore;
+import org.newdawn.slick.util.ResourceLoader;
+
+import java.io.IOException;
+
 public class Main {
 	
 	public Main() {
+		
+		Audio wavEffect = null;
+		
 		Window.setCallbacks();
+		
+		try{
+        wavEffect = AudioLoader.getAudio("WAV", ResourceLoader.getResourceAsStream("resources/.wav"));
+		}
+		catch (IOException e) {
+	        e.printStackTrace();
+	    }
 		
 //		AABB box1 = new AABB(new Vector2f(0,0), new Vector2f(1,1));
 //		AABB box2 = new AABB(new Vector2f(2,0), new Vector2f(1,1));
@@ -129,6 +148,10 @@ public class Main {
 				//target = scale;
 				if(win.getInput().isKeyPressed(GLFW_KEY_ESCAPE)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
+				}
+				
+				if(win.getInput().isKeyPressed(GLFW_KEY_M)){
+					wavEffect.playAsSoundEffect(1.0f, 1.0f, false);
 				}
 				
 				
