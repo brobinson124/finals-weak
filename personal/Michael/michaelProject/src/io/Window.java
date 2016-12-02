@@ -4,12 +4,15 @@ import static org.lwjgl.glfw.GLFW.*;
 
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWVidMode;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
 
 public class Window {
 	private long window;
 	
 	private int width, height;
 	private boolean fullscreen;
+	private boolean hasResized;
+	private GLFWWindowSizeCallback windowSizeCallback;
 	
 	private Input input;
 	
@@ -25,6 +28,7 @@ public class Window {
 	public Window(){
 		setSize(649, 480);
 		setFullscreen(false);
+		hasResized = false;
 	}
 	
 	public void createWindow(String title) {
@@ -69,10 +73,12 @@ public class Window {
 	public void update() {
 		input.update();
 		glfwPollEvents();
+		hasResized = false;
 	}
 	
 	public int getWidth() { return width; }
 	public int getHeight() { return height; }
+	public boolean hasResized() {return hasResized; }
 	public boolean getFullscreen() { return fullscreen; }
 	public long getWindow() { return window; }
 	public Input getInput() {return input;}

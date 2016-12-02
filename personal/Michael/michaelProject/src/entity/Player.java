@@ -16,9 +16,14 @@ import world.World;
 import render.Texture;
 
 public class Player extends Entity {
-
+	public static final int ANIM_IDLE = 0;
+	public static final int ANIM_WALK = 1;
+	public static final int ANIM_SIZE = 2;
+	
 	public Player(Transform transform) {
-		super(new Animation(2, 5, "an"), transform);
+		super(ANIM_SIZE, transform);
+		setAnimation(ANIM_IDLE, new Animation(2, 3, "id"));
+		setAnimation(ANIM_WALK, new Animation(2, 5, "an"));
 	}
 	
 	@Override
@@ -41,6 +46,12 @@ public class Player extends Entity {
 		}
 		
 		move(movement);
+		
+		if(movement.x != 0 | movement.y != 0){
+			useAnimation(ANIM_WALK);
+		}else{
+			useAnimation(ANIM_IDLE);
+		}
 			
 		camera.getPosition().lerp(transform.pos.mul(-world.getScale(), new Vector3f()), 0.1f);
 

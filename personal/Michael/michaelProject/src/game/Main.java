@@ -43,6 +43,9 @@ public class Main {
 		
 		GL.createCapabilities();
 		
+		glEnable(GL_BLEND);
+		glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
+		
 		Camera camera = new Camera(win.getWidth(), win.getHeight());
 		glEnable(GL_TEXTURE_2D);
 		
@@ -75,7 +78,7 @@ public class Main {
 		
 		//Texture tex = new Texture("./resources/stoneTex.jpg");
 		
-		World world = new World("test_level");
+		World world = new World("test_level", camera);
 //		Transform t = new Transform();
 //		t.scale.x = 1;
 //		t.scale.y = 1;
