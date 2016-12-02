@@ -4,9 +4,12 @@ public class Tile {
 	public static Tile tiles[] = new Tile[255];
 	public static byte not = 0;
 	
-	public static final Tile test_tile = new Tile( "carpetTex");
+	public static final Tile test_tile = new Tile( "carpet");
 	public static final Tile test2 = new Tile("stoneTex").setSolid();
-	public static final Tile coffee = new Tile("coffee").setSolid();
+	public static final Tile circleTable = new Tile("circleTable").setSolid();
+	public static final Tile squareTable = new Tile("squareTable").setSolid();
+	public static final Tile coffee = new Tile("coffee");
+	
 	
 	private byte id;
 	private boolean solid;
