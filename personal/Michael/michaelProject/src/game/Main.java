@@ -40,6 +40,9 @@ public class Main {
 
 		Sound pacman = new Sound();
 		pacman.playSound("resources/pacman_beginning.wav");
+		
+		Sound music = new Sound();
+		music.playSound("resources/aBackground.wav");
 				
 		Window.setCallbacks();
 		
@@ -140,6 +143,8 @@ public class Main {
 		
 		pacman.play();
 		
+		//music.play();
+		
 		while(!win.shouldClose()) {
 			boolean can_render = false;
 			
@@ -153,7 +158,7 @@ public class Main {
 			while(unprocessed >= frame_cap){
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_1)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
-					pacman.play();
+				//	music.stop();
 					new Main("test_level");
 				}
 				

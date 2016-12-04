@@ -54,9 +54,10 @@ public class Sound {
 
         // play, stop, loop the sound clip
         }
-        public void play(){
+        public boolean play(){
             clip.setFramePosition(0);  // Must always rewind!
             clip.start();
+            return true;
         }
         public void loop(){
             clip.loop(Clip.LOOP_CONTINUOUSLY);
