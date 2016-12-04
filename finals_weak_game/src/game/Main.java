@@ -29,6 +29,8 @@ import java.util.Random;
 import javax.sound.sampled.*;
 import javax.sound.sampled.AudioInputStream;
 
+import java.awt.Frame;
+import java.awt.TextField;
 import java.io.*;
 
 public class Main {
@@ -115,7 +117,29 @@ public class Main {
 		int coffee_x = 3;
 		int coffee_y = 3;
 		
-		world.setTile(Tile.duck, coffee_x, coffee_y);
+		int character = 2;
+		
+		if(win.getInput().isKeyPressed(GLFW.GLFW_KEY_J)) {
+			world.setTile(Tile.jesus, coffee_x, coffee_y);
+			character = 1;
+		}
+		else if(win.getInput().isKeyPressed(GLFW.GLFW_KEY_B)) {
+			world.setTile(Tile.brooke, coffee_x, coffee_y);
+			character = 2;
+		}
+		else if(win.getInput().isKeyPressed(GLFW.GLFW_KEY_C)) {
+			world.setTile(Tile.dylan, coffee_x, coffee_y);
+			character = 3;
+		}
+		else if(win.getInput().isKeyPressed(GLFW.GLFW_KEY_M)) {
+			world.setTile(Tile.michael, coffee_x, coffee_y);
+			character = 4;
+		}
+		else{
+			world.setTile(Tile.duck, coffee_x, coffee_y);
+			character = 0;
+		}
+			
 		//world.setTile(Tile.circleTable, 5, 4);
 		//pacman.play();
 		
@@ -141,7 +165,7 @@ public class Main {
 		double time = Timer.getTime();
 		double unprocessed = 0;
 		
-		pacman.play();
+		//pacman.play();
 		
 		//music.play();
 		
@@ -159,20 +183,18 @@ public class Main {
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_1)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
 				//	music.stop();
-				//	pacman.play();
-
 					new Main("test_level");
 				}
 				
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_2)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
-				//	pacman.play();
+					pacman.play();
 					new Main("test_level_2");
 				}
 				
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_3)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
-				//	pacman.play();
+					pacman.play();
 					new Main("test_level_3");
 				}
 				
@@ -185,8 +207,29 @@ public class Main {
 				can_render = true;
 				
 				//target = scale;
-				if(win.getInput().isKeyPressed(GLFW_KEY_ESCAPE)) {
+				if(win.getInput().isKeyDown(GLFW_KEY_ESCAPE)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
+				}
+				
+				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_J)) {
+					world.setTile(Tile.jesus, coffee_x, coffee_y);
+					character = 1;
+				}
+				else if(win.getInput().isKeyDown(GLFW.GLFW_KEY_B)) {
+					world.setTile(Tile.brooke, coffee_x, coffee_y);
+					character = 2;
+				}
+				else if(win.getInput().isKeyDown(GLFW.GLFW_KEY_C)) {
+					world.setTile(Tile.dylan, coffee_x, coffee_y);
+					character = 3;
+				}
+				else if(win.getInput().isKeyDown(GLFW.GLFW_KEY_M)) {
+					world.setTile(Tile.michael, coffee_x, coffee_y);
+					character = 4;
+				}
+				else{
+					world.setTile(Tile.duck, coffee_x, coffee_y);
+					character = 0;
 				}
 				
 				//if(win.getInput().isKeyPressed(GLFW_KEY_D)) {
@@ -204,7 +247,6 @@ public class Main {
 								world.setTile(Tile.test_tile, coffee_x, coffee_y);
 								coffee_x = coffee_x - 1;
 							}
-							world.setTile(Tile.duck, coffee_x, coffee_y);
 						}
 						else if (n > 2){
 							if(n == 3 && coffee_y != 32 && world.getTile(coffee_x, coffee_y+1)==Tile.test_tile){
@@ -215,7 +257,22 @@ public class Main {
 								world.setTile(Tile.test_tile, coffee_x, coffee_y);
 								coffee_y = coffee_y - 1;
 							}
-							world.setTile(Tile.duck2, coffee_x, coffee_y);
+							
+						}
+						if(character == 1){
+								world.setTile(Tile.jesus, coffee_x, coffee_y);
+							}
+						else if(character ==2) {
+							world.setTile(Tile.brooke, coffee_x, coffee_y);
+						}
+						else if(character ==3) {
+							world.setTile(Tile.dylan, coffee_x, coffee_y);
+						}
+						else if(character ==4) {
+							world.setTile(Tile.michael, coffee_x, coffee_y);
+						}
+						else{
+							world.setTile(Tile.duck, coffee_x, coffee_y);
 						}
 					}
 				//}
@@ -224,7 +281,7 @@ public class Main {
 //					wavEffect.playAsSoundEffect(1.0f, 1.0f, false);
 //				}
 //				
-				
+									
 				world.update((float)frame_cap,  win,  camera);
 				
 				world.correctCamera(camera, win);

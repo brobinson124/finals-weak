@@ -11,6 +11,13 @@ public class Tile {
 	public static final Tile coffee = new Tile("coffee");
 	public static final Tile duck = new Tile("duck").setSolid();
 	public static final Tile duck2 = new Tile("duck2").setSolid();
+	public static final Tile jesus = new Tile("jesus").setSolid();
+	public static final Tile brooke = new Tile("brooke").setSolid();
+	public static final Tile dylan = new Tile("dylan").setSolid();
+	public static final Tile michael = new Tile("michael").setSolid();
+
+
+
 	
 	
 	private byte id;
