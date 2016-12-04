@@ -164,8 +164,8 @@ public class World  {
 			pos.x = -(window.getWidth()/2) + scale;
 		}
 		
-		if(pos.x < w + (window.getWidth()/2) + scale){
-			pos.x = w + (window.getWidth()/2) + scale;
+		if(pos.x < w + (window.getWidth()) + scale){
+			pos.x = w + (window.getWidth()) + scale;
 		}
 		
 		if(pos.y < (window.getHeight()/2) - scale){
