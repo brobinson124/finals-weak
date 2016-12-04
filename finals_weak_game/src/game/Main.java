@@ -159,18 +159,20 @@ public class Main {
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_1)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
 				//	music.stop();
+				//	pacman.play();
+
 					new Main("test_level");
 				}
 				
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_2)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
-					pacman.play();
+				//	pacman.play();
 					new Main("test_level_2");
 				}
 				
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_3)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
-					pacman.play();
+				//	pacman.play();
 					new Main("test_level_3");
 				}
 				
