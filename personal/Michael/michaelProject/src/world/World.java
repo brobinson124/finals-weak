@@ -123,7 +123,7 @@ public class World  {
 //			}
 //		}
 		
-		int posX = (int)cam.getPosition().x  / (scale); //scale used to be *2, I had to change it
+		int posX = (int)cam.getPosition().x  / (scale*2); //scale used to be *2, I had to change it
 		int posY = (int)cam.getPosition().y  / (scale); //scale used to be *2, I had to change it
 	
 		for(int i = 0; i < viewX; i++){
