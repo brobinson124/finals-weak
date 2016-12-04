@@ -97,8 +97,10 @@ public class Main {
 	public Main(String levelName) {
 		
 		Audio wavEffect = null;
+
 		JavaSoundExample example = new JavaSoundExample();
 		example.playSound("resource/sample.wav");
+
 		
 		Window.setCallbacks();
 		
@@ -215,16 +217,19 @@ public class Main {
 			while(unprocessed >= frame_cap){
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_1)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
+					example.playSound("resources/sample.wav");
 					new Main("test_level");
 				}
 				
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_2)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
+					example.playSound("resources/sample.wav");
 					new Main("test_level_2");
 				}
 				
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_3)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
+					example.playSound("resources/sample.wav");
 					new Main("test_level_3");
 				}
 				
