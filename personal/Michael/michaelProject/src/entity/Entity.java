@@ -7,6 +7,7 @@ import org.lwjgl.glfw.GLFW;
 
 import collision.AABB;
 import collision.Collision;
+import game.Sound;
 import io.Window;
 import render.Animation;
 import render.Camera;
@@ -21,7 +22,6 @@ public abstract class Entity {
 	protected Animation[] animations;
 	protected Transform transform;
 	private int use_animation;
-	
 	
 	public Entity(int max_animations, Transform transform){
 		this.animations = new Animation[max_animations];
@@ -47,6 +47,10 @@ public abstract class Entity {
 	}
 	
 	public void collideWithTiles(World world){
+		Sound example = new Sound();
+		example.playSound("resources/bong.wav");
+
+		
 		AABB[] boxes = new AABB[25];
 		for(int i = 0; i < 5; i++){
 			for(int j = 0; j < 5; j++){
@@ -75,6 +79,7 @@ public abstract class Entity {
 		if(box != null){
 			Collision data = bounding_box.getCollision(box);
 			if(data.isIntersecting){
+				example.play();
 				bounding_box.correctPosition(box,  data);
 				transform.pos.set(bounding_box.getCenter(), 0);
 			}

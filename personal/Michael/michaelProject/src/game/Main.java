@@ -33,75 +33,16 @@ import java.io.*;
 
 public class Main {
 	
-//	 private final int BUFFER_SIZE = 128000;
-//	    private File soundFile;
-//	    private AudioInputStream audioStream;
-//	    private AudioFormat audioFormat;
-//	    private SourceDataLine sourceLine;
-//
-//	    /**
-//	     * @param filename the name of the file that is going to be played
-//	     */
-//	    public void playSound(String filename){
-//
-//	        String strFilename = filename;
-//
-//	        try {
-//	            soundFile = new File(strFilename);
-//	        } catch (Exception e) {
-//	            e.printStackTrace();
-//	            System.exit(1);
-//	        }
-//
-//	        try {
-//	            audioStream = AudioSystem.getAudioInputStream(soundFile);
-//	        } catch (Exception e){
-//	            e.printStackTrace();
-//	            System.exit(1);
-//	        }
-//
-//	        audioFormat = audioStream.getFormat();
-//
-//	        DataLine.Info info = new DataLine.Info(SourceDataLine.class, audioFormat);
-//	        try {
-//	            sourceLine = (SourceDataLine) AudioSystem.getLine(info);
-//	            sourceLine.open(audioFormat);
-//	        } catch (LineUnavailableException e) {
-//	            e.printStackTrace();
-//	            System.exit(1);
-//	        } catch (Exception e) {
-//	            e.printStackTrace();
-//	            System.exit(1);
-//	        }
-//
-//	        sourceLine.start();
-//
-//	        int nBytesRead = 0;
-//	        byte[] abData = new byte[BUFFER_SIZE];
-//	        while (nBytesRead != -1) {
-//	            try {
-//	                nBytesRead = audioStream.read(abData, 0, abData.length);
-//	            } catch (IOException e) {
-//	                e.printStackTrace();
-//	            }
-//	            if (nBytesRead >= 0) {
-//	                @SuppressWarnings("unused")
-//	                int nBytesWritten = sourceLine.write(abData, 0, nBytesRead);
-//	            }
-//	        }
-//
-//	        sourceLine.drain();
-//	        sourceLine.close();
-//	    }
-	
 	public Main(String levelName) {
 		
 		Audio wavEffect = null;
 
-		JavaSoundExample example = new JavaSoundExample();
-		example.playSound("resource/sample.wav");
+		Sound example = new Sound();
+		example.playSound("resources/sample.wav");
 
-		
+		Sound pacman = new Sound();
+		pacman.playSound("resources/pacman_beginning.wav");
+				
 		Window.setCallbacks();
 		
 //		try{
@@ -175,10 +116,7 @@ public class Main {
 		
 		world.setTile(Tile.test2, coffee_x, coffee_y);
 		//world.setTile(Tile.circleTable, 5, 4);
-		
-		
-		
-		
+		//pacman.play();
 		
 //		Transform t = new Transform();
 //		t.scale.x = 1;
@@ -217,19 +155,19 @@ public class Main {
 			while(unprocessed >= frame_cap){
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_1)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
-					example.playSound("resources/sample.wav");
+					pacman.play();
 					new Main("test_level");
 				}
 				
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_2)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
-					example.playSound("resources/sample.wav");
+					pacman.play();
 					new Main("test_level_2");
 				}
 				
 				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_3)) {
 					glfwSetWindowShouldClose(win.getWindow(), true);
-					example.playSound("resources/sample.wav");
+					pacman.play();
 					new Main("test_level_3");
 				}
 				
