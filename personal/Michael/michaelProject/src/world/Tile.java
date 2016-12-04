@@ -9,6 +9,8 @@ public class Tile {
 	public static final Tile circleTable = new Tile("circleTable").setSolid();
 	public static final Tile squareTable = new Tile("squareTable").setSolid();
 	public static final Tile coffee = new Tile("coffee");
+	public static final Tile duck = new Tile("duck").setSolid();
+	public static final Tile duck2 = new Tile("duck2").setSolid();
 	
 	
 	private byte id;

@@ -35,8 +35,6 @@ public class Main {
 	
 	public Main(String levelName) {
 		
-		Audio wavEffect = null;
-
 		Sound example = new Sound();
 		example.playSound("resources/sample.wav");
 
@@ -114,7 +112,7 @@ public class Main {
 		int coffee_x = 3;
 		int coffee_y = 3;
 		
-		world.setTile(Tile.test2, coffee_x, coffee_y);
+		world.setTile(Tile.duck, coffee_x, coffee_y);
 		//world.setTile(Tile.circleTable, 5, 4);
 		//pacman.play();
 		
@@ -140,7 +138,7 @@ public class Main {
 		double time = Timer.getTime();
 		double unprocessed = 0;
 		
-		
+		pacman.play();
 		
 		while(!win.shouldClose()) {
 			boolean can_render = false;
@@ -199,7 +197,7 @@ public class Main {
 								world.setTile(Tile.test_tile, coffee_x, coffee_y);
 								coffee_x = coffee_x - 1;
 							}
-							world.setTile(Tile.coffee, coffee_x, coffee_y);
+							world.setTile(Tile.duck, coffee_x, coffee_y);
 						}
 						else if (n > 2){
 							if(n == 3 && coffee_y != 32 && world.getTile(coffee_x, coffee_y+1)==Tile.test_tile){
@@ -210,7 +208,7 @@ public class Main {
 								world.setTile(Tile.test_tile, coffee_x, coffee_y);
 								coffee_y = coffee_y - 1;
 							}
-							world.setTile(Tile.coffee, coffee_x, coffee_y);
+							world.setTile(Tile.duck2, coffee_x, coffee_y);
 						}
 					}
 				//}
