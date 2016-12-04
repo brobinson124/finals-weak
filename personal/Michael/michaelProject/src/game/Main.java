@@ -228,6 +228,11 @@ public class Main {
 					new Main("test_level_2");
 				}
 				
+				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_3)) {
+					glfwSetWindowShouldClose(win.getWindow(), true);
+					new Main("test_level_3");
+				}
+				
 				if(win.hasResized()){
 					camera.setProjection(win.getWidth(), win.getHeight());
 					world.calculateView(win);
