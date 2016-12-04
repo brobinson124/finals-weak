@@ -32,7 +32,7 @@ import java.util.Random;
 
 public class Main {
 	
-	public Main() {
+	public Main(String levelName) {
 		
 		Audio wavEffect = null;
 		
@@ -101,7 +101,7 @@ public class Main {
 		
 		//Texture tex = new Texture("./resources/stoneTex.jpg");
 		
-		World world = new World("test_level", camera);
+		World world = new World(levelName, camera);
 		world.calculateView(win);
 		
 		int coffee_x = 3;
@@ -149,6 +149,16 @@ public class Main {
 			time = time_2;
 			
 			while(unprocessed >= frame_cap){
+				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_1)) {
+					glfwSetWindowShouldClose(win.getWindow(), true);
+					new Main("test_level");
+				}
+				
+				if(win.getInput().isKeyDown(GLFW.GLFW_KEY_2)) {
+					glfwSetWindowShouldClose(win.getWindow(), true);
+					new Main("test_level_2");
+				}
+				
 				if(win.hasResized()){
 					camera.setProjection(win.getWidth(), win.getHeight());
 					world.calculateView(win);
@@ -242,7 +252,7 @@ public class Main {
 	}
 	
 	public static void main(String[] args) {
-		new Main();
+		new Main("test_level");
 	}
 
 }
