@@ -16,25 +16,24 @@ public class Animation {
 		this.elapsedTime = 0;
 		this.currentTime = 0;
 		this.lastTime = Timer.getTime();
-		this.fps = 1.0/(double)fps; //Brooke
+		this.fps = 1.0/(double)fps;
 		
 		this.frames = new Texture[amount];
 		for(int i = 0; i < amount; i++){
 			this.frames[i] = new Texture(filename + "_" + i + ".png");
-			
 		}
 	}
 	
-	public void bind(){
+	public void bind()  { 
 		bind(0);
 	}
 	
-	public void bind(int sampler){
+	public void bind (int sampler) {
 		this.currentTime = Timer.getTime();
-		this.elapsedTime += currentTime - lastTime; //same resonaing as frame rate limiter 
+		this.elapsedTime += currentTime - lastTime;
 		
 		if(elapsedTime >= fps) {
-			elapsedTime -= fps;
+			elapsedTime = 0;
 			pointer++;
 		}
 		

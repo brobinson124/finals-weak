@@ -1,31 +1,26 @@
 package world;
+
 import java.util.HashMap;
 
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
-import render.Camera;
-import render.Model;
-import render.Shader;
-import render.Texture;
-
+import render.*;
 
 public class TileRenderer {
-	private HashMap<String, Texture> tileTextures;
-	
-	private Model tileModel;
+	private HashMap<String, Texture> tile_textures;
+	private Model model;
 	
 	public TileRenderer() {
-		tileTextures = new HashMap<String, Texture>();
-		float[] vertices = new float[]{
-				-1f, 1f, 0, //TL		0 
-				1f, 1f, 0, //TR		1
-				1f, -1f, 0, //BR 	2
-				-1f, -1f, 0, //BL 	3
+		tile_textures = new HashMap<String, Texture>();
+		float[] vertices = new float[] {
+				-1f, 1f, 0, 	//top left		0
+				1f, 1f, 0, 		//top right		1
+				1f, -1f, 0, 	//bottom right	2
+				-1f, -1f, 0, 	//bottom left	3
 		};
 		
-		
-		float[] texture = new float[]{
+		float[] texture = new float[] {
 				0,0,
 				1,0,
 				1,1,
@@ -33,39 +28,37 @@ public class TileRenderer {
 		};
 		
 		int[] indices = new int[] {
-				0,1,2, //draw first triangle
+				0,1,2,
 				2,3,0
 		};
 		
-		tileModel = new Model(vertices, texture, indices);
+		model = new Model(vertices, texture, indices);
 		
-		for (int i = 0; i < Tile.tiles.length; i++){
-			if (Tile.tiles[i] != null){
-				if (!tileTextures.containsKey(Tile.tiles[i].getTexture())){
+		for (int i =0; i < Tile.tiles.length; i++){
+			if(Tile.tiles[i] != null) {
+				if(!tile_textures.containsKey(Tile.tiles[i].getTexture() )){
 					String tex = Tile.tiles[i].getTexture();
-					tileTextures.put(tex, new Texture(tex +".png"));
+					tile_textures.put( tex, new Texture(tex+".png"));
 				}
 			}
 		}
 	}
 	
-	public void renderTile(Tile tile, int x, int y, Shader shader, Matrix4f world, Camera cam) {
+	public void renderTile(Tile tile, int x, int y, Shader shader, Matrix4f world, Camera cam){
 		shader.bind();
-		if (tileTextures.containsKey(tile.getTexture())) 
-			tileTextures.get(tile.getTexture()).bind(0);
-			
-		Matrix4f tilePosition = new Matrix4f().translate(new Vector3f(x*2, y*2, 0));
+		if(tile_textures.containsKey(tile.getTexture())){
+			tile_textures.get(tile.getTexture()).bind(0);
+		}
+		
+		Matrix4f tile_pos = new Matrix4f().translate( new Vector3f(x*2, y*2, 0));//x and y used to be *2, but I had to change it
 		Matrix4f target = new Matrix4f();
 		
 		cam.getProjection().mul(world, target);
-		target.mul(tilePosition);
+		target.mul(tile_pos);
 		
 		shader.setUniform("sampler", 0);
-		shader.setUniform("projection", target);
-		tileModel.render();
+		shader.setUniform("projection",  target);
 		
-//		model.render
-
+		model.render();
 	}
-
 }

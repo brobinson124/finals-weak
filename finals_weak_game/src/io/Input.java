@@ -1,4 +1,5 @@
 package io;
+
 import static org.lwjgl.glfw.GLFW.*;
 
 public class Input {
@@ -8,9 +9,8 @@ public class Input {
 	
 	public Input(long window) {
 		this.window = window;
-		//Last Key that was implemented in GLFW
 		this.keys = new boolean[GLFW_KEY_LAST];
-		for (int i = 0; i < GLFW_KEY_LAST; i++) {
+		for(int i = 0; i < GLFW_KEY_LAST; i++){
 			keys[i] = false;
 		}
 	}
@@ -19,22 +19,21 @@ public class Input {
 		return glfwGetKey(window, key) == 1;
 	}
 	
-	public boolean isKeyPressed(int key) {
-		return (isKeyDown(key) && !keys[key]);
-	}
-	
-	public boolean isKeyReleased(int key) {
-		return (!isKeyDown(key) && keys[key]);
-	}
-	public boolean isMouseButtonDown(int button) {
+	public boolean isMouseButtonDown(int button){
 		return glfwGetMouseButton(window, button) == 1;
 	}
 	
+	public boolean isKeyPressed(int key){
+		return (isKeyDown(key) && !keys[key]);
+	}
+	
+	public boolean isKeyReleased(int key){
+		return (!isKeyDown(key) && keys[key]);
+	}
 	
 	public void update() {
-		for (int i = 32; i < GLFW_KEY_LAST; i++){
+		for(int i = 0; i < GLFW_KEY_LAST; i++){
 			keys[i] = isKeyDown(i);
 		}
-		
 	}
 }

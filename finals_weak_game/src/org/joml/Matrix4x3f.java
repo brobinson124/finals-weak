@@ -1094,8 +1094,8 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
         x *= n;
         y *= n;
         z *= n;
-        double c = Math.cos(angle);
         double s = Math.sin(angle);
+        double c = Math.cosFromSin(s, angle);
         double omc = 1.0 - c;
         m00 = (float)(c + x*x*omc);
         m11 = (float)(c + y*y*omc);
@@ -1136,8 +1136,8 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
         x *= n;
         y *= n;
         z *= n;
-        double c = Math.cos(angle);
         double s = Math.sin(angle);
+        double c = Math.cosFromSin(s, angle);
         double omc = 1.0 - c;
         m00 = (float)(c + x*x*omc);
         m11 = (float)(c + y*y*omc);
@@ -1162,7 +1162,7 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
     }
 
     /**
-     * Set this matrix to be equivalent to the rotation specified by the given {@link Quaternionfc}.
+     * Set this matrix to be equivalent to the rotation - and possibly scaling - specified by the given {@link Quaternionfc}.
      * <p>
      * This method is equivalent to calling: <tt>rotation(q)</tt>
      * 
@@ -1177,39 +1177,34 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
     }
 
     /**
-     * Set this matrix to be equivalent to the rotation specified by the given {@link Quaterniond}.
+     * Set this matrix to be equivalent to the rotation - and possibly scaling - specified by the given {@link Quaterniondc}.
      * <p>
      * This method is equivalent to calling: <tt>rotation(q)</tt>
      * 
      * @param q
-     *          the {@link Quaterniond}
+     *          the {@link Quaterniondc}
      * @return this
      */
-    public Matrix4x3f set(Quaterniond q) {
-        double dx = q.x + q.x;
-        double dy = q.y + q.y;
-        double dz = q.z + q.z;
-        double q00 = dx * q.x;
-        double q11 = dy * q.y;
-        double q22 = dz * q.z;
-        double q01 = dx * q.y;
-        double q02 = dx * q.z;
-        double q03 = dx * q.w;
-        double q12 = dy * q.z;
-        double q13 = dy * q.w;
-        double q23 = dz * q.w;
-        m00 = (float) (1.0 - q11 - q22);
-        m01 = (float) (q01 + q23);
-        m02 = (float) (q02 - q13);
-        m10 = (float) (q01 - q23);
-        m11 = (float) (1.0 - q22 - q00);
-        m12 = (float) (q12 + q03);
-        m20 = (float) (q02 + q13);
-        m21 = (float) (q12 - q03);
-        m22 = (float) (1.0 - q11 - q00);
-        m30 = 0.0f;
-        m31 = 0.0f;
-        m32 = 0.0f;
+    public Matrix4x3f set(Quaterniondc q) {
+        double w2 = q.w() * q.w();
+        double x2 = q.x() * q.x();
+        double y2 = q.y() * q.y();
+        double z2 = q.z() * q.z();
+        double zw = q.z() * q.w();
+        double xy = q.x() * q.y();
+        double xz = q.x() * q.z();
+        double yw = q.y() * q.w();
+        double yz = q.y() * q.z();
+        double xw = q.x() * q.w();
+        m00 = (float) (w2 + x2 - z2 - y2);
+        m01 = (float) (xy + zw + zw + xy);
+        m02 = (float) (xz - yw + xz - yw);
+        m10 = (float) (-zw + xy - zw + xy);
+        m11 = (float) (y2 - z2 + w2 - x2);
+        m12 = (float) (yz + yz + xw + xw);
+        m20 = (float) (yw + xz + xz + yw);
+        m21 = (float) (yz + yz - xw - xw);
+        m22 = (float) (z2 - y2 - x2 + w2);
         properties = 0;
         return this;
     }
@@ -2358,8 +2353,8 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
      * @return this
      */
     public Matrix4x3f rotation(float angle, float x, float y, float z) {
-        float cos = (float) Math.cos(angle);
         float sin = (float) Math.sin(angle);
+        float cos = (float) Math.cosFromSin(sin, angle);
         float C = 1.0f - cos;
         float xy = x * y, xz = x * z, yz = y * z;
         m00 = cos + x * x * C;
@@ -2403,8 +2398,8 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
             cos = 0.0f;
             sin = -1.0f;
         } else {
-            cos = (float) Math.cos(ang);
             sin = (float) Math.sin(ang);
+            cos = (float) Math.cosFromSin(sin, ang);
         }
         m00 = 1.0f;
         m01 = 0.0f;
@@ -2447,8 +2442,8 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
             cos = 0.0f;
             sin = -1.0f;
         } else {
-            cos = (float) Math.cos(ang);
             sin = (float) Math.sin(ang);
+            cos = (float) Math.cosFromSin(sin, ang);
         }
         m00 = cos;
         m01 = 0.0f;
@@ -2491,8 +2486,8 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
             cos = 0.0f;
             sin = -1.0f;
         } else {
-            cos = (float) Math.cos(ang);
             sin = (float) Math.sin(ang);
+            cos = (float) Math.cosFromSin(sin, ang);
         }
         m00 = cos;
         m01 = sin;
@@ -2529,12 +2524,12 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
      * @return this
      */
     public Matrix4x3f rotationXYZ(float angleX, float angleY, float angleZ) {
-        float cosX = (float) Math.cos(angleX);
         float sinX = (float) Math.sin(angleX);
-        float cosY = (float) Math.cos(angleY);
+        float cosX = (float) Math.cosFromSin(sinX, angleX);
         float sinY = (float) Math.sin(angleY);
-        float cosZ = (float) Math.cos(angleZ);
+        float cosY = (float) Math.cosFromSin(sinY, angleY);
         float sinZ = (float) Math.sin(angleZ);
+        float cosZ = (float) Math.cosFromSin(sinZ, angleZ);
         float m_sinX = -sinX;
         float m_sinY = -sinY;
         float m_sinZ = -sinZ;
@@ -2585,12 +2580,12 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
      * @return this
      */
     public Matrix4x3f rotationZYX(float angleZ, float angleY, float angleX) {
-        float cosZ = (float) Math.cos(angleZ);
-        float sinZ = (float) Math.sin(angleZ);
-        float cosY = (float) Math.cos(angleY);
-        float sinY = (float) Math.sin(angleY);
-        float cosX = (float) Math.cos(angleX);
         float sinX = (float) Math.sin(angleX);
+        float cosX = (float) Math.cosFromSin(sinX, angleX);
+        float sinY = (float) Math.sin(angleY);
+        float cosY = (float) Math.cosFromSin(sinY, angleY);
+        float sinZ = (float) Math.sin(angleZ);
+        float cosZ = (float) Math.cosFromSin(sinZ, angleZ);
         float m_sinZ = -sinZ;
         float m_sinY = -sinY;
         float m_sinX = -sinX;
@@ -2641,12 +2636,12 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
      * @return this
      */
     public Matrix4x3f rotationYXZ(float angleY, float angleX, float angleZ) {
-        float cosY = (float) Math.cos(angleY);
-        float sinY = (float) Math.sin(angleY);
-        float cosX = (float) Math.cos(angleX);
         float sinX = (float) Math.sin(angleX);
-        float cosZ = (float) Math.cos(angleZ);
+        float cosX = (float) Math.cosFromSin(sinX, angleX);
+        float sinY = (float) Math.sin(angleY);
+        float cosY = (float) Math.cosFromSin(sinY, angleY);
         float sinZ = (float) Math.sin(angleZ);
+        float cosZ = (float) Math.cosFromSin(sinZ, angleZ);
         float m_sinY = -sinY;
         float m_sinX = -sinX;
         float m_sinZ = -sinZ;
@@ -2695,12 +2690,12 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
      * @return this
      */
     public Matrix4x3f setRotationXYZ(float angleX, float angleY, float angleZ) {
-        float cosX = (float) Math.cos(angleX);
         float sinX = (float) Math.sin(angleX);
-        float cosY = (float) Math.cos(angleY);
+        float cosX = (float) Math.cosFromSin(sinX, angleX);
         float sinY = (float) Math.sin(angleY);
-        float cosZ = (float) Math.cos(angleZ);
+        float cosY = (float) Math.cosFromSin(sinY, angleY);
         float sinZ = (float) Math.sin(angleZ);
+        float cosZ = (float) Math.cosFromSin(sinZ, angleZ);
         float m_sinX = -sinX;
         float m_sinY = -sinY;
         float m_sinZ = -sinZ;
@@ -2745,12 +2740,12 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
      * @return this
      */
     public Matrix4x3f setRotationZYX(float angleZ, float angleY, float angleX) {
-        float cosZ = (float) Math.cos(angleZ);
-        float sinZ = (float) Math.sin(angleZ);
-        float cosY = (float) Math.cos(angleY);
-        float sinY = (float) Math.sin(angleY);
-        float cosX = (float) Math.cos(angleX);
         float sinX = (float) Math.sin(angleX);
+        float cosX = (float) Math.cosFromSin(sinX, angleX);
+        float sinY = (float) Math.sin(angleY);
+        float cosY = (float) Math.cosFromSin(sinY, angleY);
+        float sinZ = (float) Math.sin(angleZ);
+        float cosZ = (float) Math.cosFromSin(sinZ, angleZ);
         float m_sinZ = -sinZ;
         float m_sinY = -sinY;
         float m_sinX = -sinX;
@@ -2795,12 +2790,12 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
      * @return this
      */
     public Matrix4x3f setRotationYXZ(float angleY, float angleX, float angleZ) {
-        float cosY = (float) Math.cos(angleY);
-        float sinY = (float) Math.sin(angleY);
-        float cosX = (float) Math.cos(angleX);
         float sinX = (float) Math.sin(angleX);
-        float cosZ = (float) Math.cos(angleZ);
+        float cosX = (float) Math.cosFromSin(sinX, angleX);
+        float sinY = (float) Math.sin(angleY);
+        float cosY = (float) Math.cosFromSin(sinY, angleY);
         float sinZ = (float) Math.sin(angleZ);
+        float cosZ = (float) Math.cosFromSin(sinZ, angleZ);
         float m_sinY = -sinY;
         float m_sinX = -sinX;
         float m_sinZ = -sinZ;
@@ -2829,7 +2824,7 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
     }
 
     /**
-     * Set this matrix to the rotation transformation of the given {@link Quaternionfc}.
+     * Set this matrix to the rotation - and possibly scaling - transformation of the given {@link Quaternionfc}.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
      * counter-clockwise around the rotation axis, when viewing along the negative axis direction towards the origin.
@@ -2850,33 +2845,26 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
      * @return this
      */
     public Matrix4x3f rotation(Quaternionfc quat) {
-        float dqx = quat.x() + quat.x();
-        float dqy = quat.y() + quat.y();
-        float dqz = quat.z() + quat.z();
-        float q00 = dqx * quat.x();
-        float q11 = dqy * quat.y();
-        float q22 = dqz * quat.z();
-        float q01 = dqx * quat.y();
-        float q02 = dqx * quat.z();
-        float q03 = dqx * quat.w();
-        float q12 = dqy * quat.z();
-        float q13 = dqy * quat.w();
-        float q23 = dqz * quat.w();
-
-        m00 = 1.0f - q11 - q22;
-        m01 = q01 + q23;
-        m02 = q02 - q13;
-        m10 = q01 - q23;
-        m11 = 1.0f - q22 - q00;
-        m12 = q12 + q03;
-        m20 = q02 + q13;
-        m21 = q12 - q03;
-        m22 = 1.0f - q11 - q00;
-        m30 = 0.0f;
-        m31 = 0.0f;
-        m32 = 0.0f;
+        float w2 = quat.w() * quat.w();
+        float x2 = quat.x() * quat.x();
+        float y2 = quat.y() * quat.y();
+        float z2 = quat.z() * quat.z();
+        float zw = quat.z() * quat.w();
+        float xy = quat.x() * quat.y();
+        float xz = quat.x() * quat.z();
+        float yw = quat.y() * quat.w();
+        float yz = quat.y() * quat.z();
+        float xw = quat.x() * quat.w();
+        m00 = w2 + x2 - z2 - y2;
+        m01 = xy + zw + zw + xy;
+        m02 = xz - yw + xz - yw;
+        m10 = -zw + xy - zw + xy;
+        m11 = y2 - z2 + w2 - x2;
+        m12 = yz + yz + xw + xw;
+        m20 = yw + xz + xz + yw;
+        m21 = yz + yz - xw - xw;
+        m22 = z2 - y2 - x2 + w2;
         properties = 0;
-
         return this;
     }
 
@@ -3160,6 +3148,110 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
     }
 
     /**
+     * Set <code>this</code> matrix to <tt>T * R * M</tt>, where <tt>T</tt> is a translation by the given <tt>(tx, ty, tz)</tt>,
+     * <tt>R</tt> is a rotation - and possibly scaling - transformation specified by the given quaternion and <tt>M</tt> is the given matrix <code>mat</code>.
+     * <p>
+     * When transforming a vector by the resulting matrix the transformation described by <code>M</code> will be applied first, then the scaling, then rotation and
+     * at last the translation.
+     * <p>
+     * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
+     * counter-clockwise around the rotation axis, when viewing along the negative axis direction towards the origin.
+     * When used with a left-handed coordinate system, the rotation is clockwise.
+     * <p>
+     * This method is equivalent to calling: <tt>translation(tx, ty, tz).rotate(quat).mul(mat)</tt>
+     * 
+     * @see #translation(float, float, float)
+     * @see #rotate(Quaternionfc)
+     * @see #mul(Matrix4x3fc)
+     * 
+     * @param tx
+     *          the number of units by which to translate the x-component
+     * @param ty
+     *          the number of units by which to translate the y-component
+     * @param tz
+     *          the number of units by which to translate the z-component
+     * @param quat
+     *          the quaternion representing a rotation
+     * @param mat
+     *          the matrix to multiply with
+     * @return this
+     */
+    public Matrix4x3f translationRotateMul(float tx, float ty, float tz, Quaternionfc quat, Matrix4x3fc mat) {
+        return translationRotateMul(tx, ty, tz, quat.x(), quat.y(), quat.z(), quat.w(), mat);
+    }
+
+    /**
+     * Set <code>this</code> matrix to <tt>T * R * M</tt>, where <tt>T</tt> is a translation by the given <tt>(tx, ty, tz)</tt>,
+     * <tt>R</tt> is a rotation - and possibly scaling - transformation specified by the quaternion <tt>(qx, qy, qz, qw)</tt> and <tt>M</tt> is the given matrix <code>mat</code>
+     * <p>
+     * When transforming a vector by the resulting matrix the transformation described by <code>M</code> will be applied first, then the scaling, then rotation and
+     * at last the translation.
+     * <p>
+     * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
+     * counter-clockwise around the rotation axis, when viewing along the negative axis direction towards the origin.
+     * When used with a left-handed coordinate system, the rotation is clockwise.
+     * <p>
+     * This method is equivalent to calling: <tt>translation(tx, ty, tz).rotate(quat).mul(mat)</tt>
+     * 
+     * @see #translation(float, float, float)
+     * @see #rotate(Quaternionfc)
+     * @see #mul(Matrix4x3fc)
+     * 
+     * @param tx
+     *          the number of units by which to translate the x-component
+     * @param ty
+     *          the number of units by which to translate the y-component
+     * @param tz
+     *          the number of units by which to translate the z-component
+     * @param qx
+     *          the x-coordinate of the vector part of the quaternion
+     * @param qy
+     *          the y-coordinate of the vector part of the quaternion
+     * @param qz
+     *          the z-coordinate of the vector part of the quaternion
+     * @param qw
+     *          the scalar part of the quaternion
+     * @param mat
+     *          the matrix to multiply with
+     * @return this
+     */
+    public Matrix4x3f translationRotateMul(float tx, float ty, float tz, float qx, float qy, float qz, float qw, Matrix4x3fc mat) {
+        float w2 = qw * qw;
+        float x2 = qx * qx;
+        float y2 = qy * qy;
+        float z2 = qz * qz;
+        float zw = qz * qw;
+        float xy = qx * qy;
+        float xz = qx * qz;
+        float yw = qy * qw;
+        float yz = qy * qz;
+        float xw = qx * qw;
+        float nm00 = w2 + x2 - z2 - y2;
+        float nm01 = xy + zw + zw + xy;
+        float nm02 = xz - yw + xz - yw;
+        float nm10 = -zw + xy - zw + xy;
+        float nm11 = y2 - z2 + w2 - x2;
+        float nm12 = yz + yz + xw + xw;
+        float nm20 = yw + xz + xz + yw;
+        float nm21 = yz + yz - xw - xw;
+        float nm22 = z2 - y2 - x2 + w2;
+        m00 = nm00 * mat.m00() + nm10 * mat.m01() + nm20 * mat.m02();
+        m01 = nm01 * mat.m00() + nm11 * mat.m01() + nm21 * mat.m02();
+        m02 = nm02 * mat.m00() + nm12 * mat.m01() + nm22 * mat.m02();
+        m10 = nm00 * mat.m10() + nm10 * mat.m11() + nm20 * mat.m12();
+        m11 = nm01 * mat.m10() + nm11 * mat.m11() + nm21 * mat.m12();
+        m12 = nm02 * mat.m10() + nm12 * mat.m11() + nm22 * mat.m12();
+        m20 = nm00 * mat.m20() + nm10 * mat.m21() + nm20 * mat.m22();
+        m21 = nm01 * mat.m20() + nm11 * mat.m21() + nm21 * mat.m22();
+        m22 = nm02 * mat.m20() + nm12 * mat.m21() + nm22 * mat.m22();
+        m30 = nm00 * mat.m30() + nm10 * mat.m31() + nm20 * mat.m32() + tx;
+        m31 = nm01 * mat.m30() + nm11 * mat.m31() + nm21 * mat.m32() + ty;
+        m32 = nm02 * mat.m30() + nm12 * mat.m31() + nm22 * mat.m32() + tz;
+        this.properties = 0;
+        return this;
+    }
+
+    /**
      * Set the left 3x3 submatrix of this {@link Matrix4x3f} to the given {@link Matrix3fc} and don't change the other elements.
      * 
      * @param mat
@@ -3411,8 +3503,8 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
             cos = 0.0f;
             sin = -1.0f;
         } else {
-            cos = (float) Math.cos(ang);
             sin = (float) Math.sin(ang);
+            cos = (float) Math.cosFromSin(sin, ang);
         }
         float rm11 = cos;
         float rm12 = sin;
@@ -3481,8 +3573,8 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
             cos = 0.0f;
             sin = -1.0f;
         } else {
-            cos = (float) Math.cos(ang);
             sin = (float) Math.sin(ang);
+            cos = (float) Math.cosFromSin(sin, ang);
         }
         float rm00 = cos;
         float rm02 = -sin;
@@ -3551,8 +3643,8 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
             cos = 0.0f;
             sin = -1.0f;
         } else {
-            cos = (float) Math.cos(ang);
             sin = (float) Math.sin(ang);
+            cos = (float) Math.cosFromSin(sin, ang);
         }
         float rm00 = cos;
         float rm01 = sin;
@@ -3660,12 +3752,12 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
         if ((properties & PROPERTY_IDENTITY) != 0)
             return dest.rotationXYZ(angleX, angleY, angleZ);
 
-        float cosX = (float) Math.cos(angleX);
         float sinX = (float) Math.sin(angleX);
-        float cosY = (float) Math.cos(angleY);
+        float cosX = (float) Math.cosFromSin(sinX, angleX);
         float sinY = (float) Math.sin(angleY);
-        float cosZ = (float) Math.cos(angleZ);
+        float cosY = (float) Math.cosFromSin(sinY, angleY);
         float sinZ = (float) Math.sin(angleZ);
+        float cosZ = (float) Math.cosFromSin(sinZ, angleZ);
         float m_sinX = -sinX;
         float m_sinY = -sinY;
         float m_sinZ = -sinZ;
@@ -3756,12 +3848,12 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
         if ((properties & PROPERTY_IDENTITY) != 0)
             return dest.rotationZYX(angleZ, angleY, angleX);        
 
-        float cosZ = (float) Math.cos(angleZ);
-        float sinZ = (float) Math.sin(angleZ);
-        float cosY = (float) Math.cos(angleY);
-        float sinY = (float) Math.sin(angleY);
-        float cosX = (float) Math.cos(angleX);
         float sinX = (float) Math.sin(angleX);
+        float cosX = (float) Math.cosFromSin(sinX, angleX);
+        float sinY = (float) Math.sin(angleY);
+        float cosY = (float) Math.cosFromSin(sinY, angleY);
+        float sinZ = (float) Math.sin(angleZ);
+        float cosZ = (float) Math.cosFromSin(sinZ, angleZ);
         float m_sinZ = -sinZ;
         float m_sinY = -sinY;
         float m_sinX = -sinX;
@@ -3852,12 +3944,12 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
         if ((properties & PROPERTY_IDENTITY) != 0)
             return dest.rotationYXZ(angleY, angleX, angleZ);
 
-        float cosY = (float) Math.cos(angleY);
-        float sinY = (float) Math.sin(angleY);
-        float cosX = (float) Math.cos(angleX);
         float sinX = (float) Math.sin(angleX);
-        float cosZ = (float) Math.cos(angleZ);
+        float cosX = (float) Math.cosFromSin(sinX, angleX);
+        float sinY = (float) Math.sin(angleY);
+        float cosY = (float) Math.cosFromSin(sinY, angleY);
         float sinZ = (float) Math.sin(angleZ);
+        float cosZ = (float) Math.cosFromSin(sinZ, angleZ);
         float m_sinY = -sinY;
         float m_sinX = -sinX;
         float m_sinZ = -sinZ;
@@ -3934,7 +4026,7 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
     }
     private Matrix4x3f rotateGeneric(float ang, float x, float y, float z, Matrix4x3f dest) {
         float s = (float) Math.sin(ang);
-        float c = (float) Math.cos(ang);
+        float c = (float) Math.cosFromSin(s, ang);
         float C = 1.0f - c;
         float xx = x * x, xy = x * y, xz = x * z;
         float yy = y * y, yz = y * z;
@@ -4044,7 +4136,7 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
      */
     public Matrix4x3f rotateTranslation(float ang, float x, float y, float z, Matrix4x3f dest) {
         float s = (float) Math.sin(ang);
-        float c = (float) Math.cos(ang);
+        float c = (float) Math.cosFromSin(s, ang);
         float C = 1.0f - c;
         float xx = x * x, xy = x * y, xz = x * z;
         float yy = y * y, yz = y * z;
@@ -4119,7 +4211,7 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
      */
     public Matrix4x3f rotateLocal(float ang, float x, float y, float z, Matrix4x3f dest) {
         float s = (float) Math.sin(ang);
-        float c = (float) Math.cos(ang);
+        float c = (float) Math.cosFromSin(s, ang);
         float C = 1.0f - c;
         float xx = x * x, xy = x * y, xz = x * z;
         float yy = y * y, yz = y * z;
@@ -6546,7 +6638,7 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
     }
 
     /**
-     * Apply the rotation transformation of the given {@link Quaternionfc} to this matrix and store
+     * Apply the rotation - and possibly scaling - transformation of the given {@link Quaternionfc} to this matrix and store
      * the result in <code>dest</code>.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
@@ -6579,27 +6671,25 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
         return rotateGeneric(quat, dest);
     }
     private Matrix4x3f rotateGeneric(Quaternionfc quat, Matrix4x3f dest) {
-        float dqx = quat.x() + quat.x();
-        float dqy = quat.y() + quat.y();
-        float dqz = quat.z() + quat.z();
-        float q00 = dqx * quat.x();
-        float q11 = dqy * quat.y();
-        float q22 = dqz * quat.z();
-        float q01 = dqx * quat.y();
-        float q02 = dqx * quat.z();
-        float q03 = dqx * quat.w();
-        float q12 = dqy * quat.z();
-        float q13 = dqy * quat.w();
-        float q23 = dqz * quat.w();
-        float rm00 = 1.0f - q11 - q22;
-        float rm01 = q01 + q23;
-        float rm02 = q02 - q13;
-        float rm10 = q01 - q23;
-        float rm11 = 1.0f - q22 - q00;
-        float rm12 = q12 + q03;
-        float rm20 = q02 + q13;
-        float rm21 = q12 - q03;
-        float rm22 = 1.0f - q11 - q00;
+        float w2 = quat.w() * quat.w();
+        float x2 = quat.x() * quat.x();
+        float y2 = quat.y() * quat.y();
+        float z2 = quat.z() * quat.z();
+        float zw = quat.z() * quat.w();
+        float xy = quat.x() * quat.y();
+        float xz = quat.x() * quat.z();
+        float yw = quat.y() * quat.w();
+        float yz = quat.y() * quat.z();
+        float xw = quat.x() * quat.w();
+        float rm00 = w2 + x2 - z2 - y2;
+        float rm01 = xy + zw + zw + xy;
+        float rm02 = xz - yw + xz - yw;
+        float rm10 = -zw + xy - zw + xy;
+        float rm11 = y2 - z2 + w2 - x2;
+        float rm12 = yz + yz + xw + xw;
+        float rm20 = yw + xz + xz + yw;
+        float rm21 = yz + yz - xw - xw;
+        float rm22 = z2 - y2 - x2 + w2;
         float nm00 = m00 * rm00 + m10 * rm01 + m20 * rm02;
         float nm01 = m01 * rm00 + m11 * rm01 + m21 * rm02;
         float nm02 = m02 * rm00 + m12 * rm01 + m22 * rm02;
@@ -6623,7 +6713,7 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
     }
 
     /**
-     * Apply the rotation transformation of the given {@link Quaternionfc} to this matrix.
+     * Apply the rotation - and possibly scaling - transformation of the given {@link Quaternionfc} to this matrix.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
      * counter-clockwise around the rotation axis, when viewing along the negative axis direction towards the origin.
@@ -6650,7 +6740,7 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
     }
 
     /**
-     * Apply the rotation transformation of the given {@link Quaternionfc} to this matrix, which is assumed to only contain a translation, and store
+     * Apply the rotation - and possibly scaling - transformation of the given {@link Quaternionfc} to this matrix, which is assumed to only contain a translation, and store
      * the result in <code>dest</code>.
      * <p>
      * This method assumes <code>this</code> to only contain a translation.
@@ -6678,29 +6768,25 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
      * @return dest
      */
     public Matrix4x3f rotateTranslation(Quaternionfc quat, Matrix4x3f dest) {
-        float dqx = quat.x() + quat.x();
-        float dqy = quat.y() + quat.y();
-        float dqz = quat.z() + quat.z();
-        float q00 = dqx * quat.x();
-        float q11 = dqy * quat.y();
-        float q22 = dqz * quat.z();
-        float q01 = dqx * quat.y();
-        float q02 = dqx * quat.z();
-        float q03 = dqx * quat.w();
-        float q12 = dqy * quat.z();
-        float q13 = dqy * quat.w();
-        float q23 = dqz * quat.w();
-
-        float rm00 = 1.0f - q11 - q22;
-        float rm01 = q01 + q23;
-        float rm02 = q02 - q13;
-        float rm10 = q01 - q23;
-        float rm11 = 1.0f - q22 - q00;
-        float rm12 = q12 + q03;
-        float rm20 = q02 + q13;
-        float rm21 = q12 - q03;
-        float rm22 = 1.0f - q11 - q00;
-
+        float w2 = quat.w() * quat.w();
+        float x2 = quat.x() * quat.x();
+        float y2 = quat.y() * quat.y();
+        float z2 = quat.z() * quat.z();
+        float zw = quat.z() * quat.w();
+        float xy = quat.x() * quat.y();
+        float xz = quat.x() * quat.z();
+        float yw = quat.y() * quat.w();
+        float yz = quat.y() * quat.z();
+        float xw = quat.x() * quat.w();
+        float rm00 = w2 + x2 - z2 - y2;
+        float rm01 = xy + zw + zw + xy;
+        float rm02 = xz - yw + xz - yw;
+        float rm10 = -zw + xy - zw + xy;
+        float rm11 = y2 - z2 + w2 - x2;
+        float rm12 = yz + yz + xw + xw;
+        float rm20 = yw + xz + xz + yw;
+        float rm21 = yz + yz - xw - xw;
+        float rm22 = z2 - y2 - x2 + w2;
         float nm00 = rm00;
         float nm01 = rm01;
         float nm02 = rm02;
@@ -6720,12 +6806,11 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
         dest.m31 = m31;
         dest.m32 = m32;
         dest.properties = (byte) (properties & ~(PROPERTY_IDENTITY | PROPERTY_TRANSLATION));
-
         return dest;
     }
 
     /**
-     * Pre-multiply the rotation transformation of the given {@link Quaternionfc} to this matrix and store
+     * Pre-multiply the rotation - and possibly scaling - transformation of the given {@link Quaternionfc} to this matrix and store
      * the result in <code>dest</code>.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
@@ -6751,27 +6836,25 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
      * @return dest
      */
     public Matrix4x3f rotateLocal(Quaternionfc quat, Matrix4x3f dest) {
-        float dqx = quat.x() + quat.x();
-        float dqy = quat.y() + quat.y();
-        float dqz = quat.z() + quat.z();
-        float q00 = dqx * quat.x();
-        float q11 = dqy * quat.y();
-        float q22 = dqz * quat.z();
-        float q01 = dqx * quat.y();
-        float q02 = dqx * quat.z();
-        float q03 = dqx * quat.w();
-        float q12 = dqy * quat.z();
-        float q13 = dqy * quat.w();
-        float q23 = dqz * quat.w();
-        float lm00 = 1.0f - q11 - q22;
-        float lm01 = q01 + q23;
-        float lm02 = q02 - q13;
-        float lm10 = q01 - q23;
-        float lm11 = 1.0f - q22 - q00;
-        float lm12 = q12 + q03;
-        float lm20 = q02 + q13;
-        float lm21 = q12 - q03;
-        float lm22 = 1.0f - q11 - q00;
+        float w2 = quat.w() * quat.w();
+        float x2 = quat.x() * quat.x();
+        float y2 = quat.y() * quat.y();
+        float z2 = quat.z() * quat.z();
+        float zw = quat.z() * quat.w();
+        float xy = quat.x() * quat.y();
+        float xz = quat.x() * quat.z();
+        float yw = quat.y() * quat.w();
+        float yz = quat.y() * quat.z();
+        float xw = quat.x() * quat.w();
+        float lm00 = w2 + x2 - z2 - y2;
+        float lm01 = xy + zw + zw + xy;
+        float lm02 = xz - yw + xz - yw;
+        float lm10 = -zw + xy - zw + xy;
+        float lm11 = y2 - z2 + w2 - x2;
+        float lm12 = yz + yz + xw + xw;
+        float lm20 = yw + xz + xz + yw;
+        float lm21 = yz + yz - xw - xw;
+        float lm22 = z2 - y2 - x2 + w2;
         float nm00 = lm00 * m00 + lm10 * m01 + lm20 * m02;
         float nm01 = lm01 * m00 + lm11 * m01 + lm21 * m02;
         float nm02 = lm02 * m00 + lm12 * m01 + lm22 * m02;
@@ -6801,7 +6884,7 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
     }
 
     /**
-     * Pre-multiply the rotation transformation of the given {@link Quaternionfc} to this matrix.
+     * Pre-multiply the rotation - and possibly scaling - transformation of the given {@link Quaternionfc} to this matrix.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
      * counter-clockwise around the rotation axis, when viewing along the negative axis direction towards the origin.
@@ -8061,16 +8144,16 @@ public class Matrix4x3f implements Externalizable, Matrix4x3fc {
         float m30 = m20 * -radius + this.m30;
         float m31 = m21 * -radius + this.m31;
         float m32 = m22 * -radius + this.m32;
-        float cos = (float) Math.cos(angleX);
         float sin = (float) Math.sin(angleX);
+        float cos = (float) Math.cosFromSin(sin, angleX);
         float nm10 = m10 * cos + m20 * sin;
         float nm11 = m11 * cos + m21 * sin;
         float nm12 = m12 * cos + m22 * sin;
         float m20 = this.m20 * cos - m10 * sin;
         float m21 = this.m21 * cos - m11 * sin;
         float m22 = this.m22 * cos - m12 * sin;
-        cos = (float) Math.cos(angleY);
         sin = (float) Math.sin(angleY);
+        cos = (float) Math.cosFromSin(sin, angleY);
         float nm00 = m00 * cos - m20 * sin;
         float nm01 = m01 * cos - m21 * sin;
         float nm02 = m02 * cos - m22 * sin;

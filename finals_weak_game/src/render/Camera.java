@@ -1,6 +1,8 @@
 package render;
+
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
+
 
 public class Camera {
 	private Vector3f position;
@@ -8,11 +10,16 @@ public class Camera {
 	
 	public Camera(int width, int height) {
 		position = new Vector3f(0,0,0);
-		projection = new Matrix4f().setOrtho2D(-width/2, width/2, -height/2, height/2);
+		setProjection(width, height);
 	}
 	
-	public void setPosition(Vector3f position){
-		this.position.set(position);
+	public void setProjection(int width, int height){
+		projection = new Matrix4f().setOrtho2D(-width/2, width/2, -height/2, height/2);
+
+	}
+	
+	public void setPosition(Vector3f position) {
+		this.position = position;;
 	}
 	
 	public void addPosition(Vector3f position){
@@ -20,16 +27,14 @@ public class Camera {
 	}
 	
 	public Vector3f getPosition() { return position; }
-
-	public Matrix4f getProjection(){
-		//Matrix4f target = new Matrix4f(); //we are allocating nothing
-		//Matrix4f pos = new Matrix4f().setTranslation(position);
-				
-		//target = projection.mul(pos, target);
-		//return target;
-		
-		//the above code allocates twice as much as we need | Brooke
-		
+	
+	public Matrix4f getProjection() {
+//		Matrix4f target = new Matrix4f();
+//		Matrix4f pos = new Matrix4f().setTranslation(position);
+//		
+//		target = projection.mul(pos, target);
+//		return target;
 		return projection.translate(position, new Matrix4f());
 	}
+	
 }

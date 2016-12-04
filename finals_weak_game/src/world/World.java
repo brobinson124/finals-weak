@@ -1,7 +1,10 @@
 package world;
+
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.imageio.ImageIO;
 
@@ -10,54 +13,83 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 import collision.AABB;
+import entity.Entity;
+import entity.Player;
+import entity.Transform;
 import io.Window;
+import render.Animation;
 import render.Camera;
 import render.Shader;
 
-public class World {
-	private final int view = 32;
-	private byte[] tiles; //it is type byte because that is how we render files | Brooke
-	private int width;
-	private int height;
-	private int scale; 
+public class World  {
 	private int viewX;
 	private int viewY;
-	
+	private byte[] tiles;
 	private AABB[] bounding_boxes;
+	private List<Entity> entities;
+	private int width;
+	private int height;
+	private int scale;
 	
 	private Matrix4f world;
 	
-	public World(String world) {
-		//this constructor will take an image and make a 
-		//level based off of it
+	public World(String world, Camera camera){
 		try {
-			BufferedImage tile_sheet = ImageIO.read(new File("./levels/" + world + "_tiles.png"));
-			//BufferedImage entity_sheet = ImageIO.read(new File("./levels/" + world + "_entity.png"));
-			
+			BufferedImage tile_sheet = ImageIO.read(new File("./resources/" + world + "_tiles.png"));
+			BufferedImage entity_sheet = ImageIO.read(new File("./resources/" + world + "_entities.png"));
+		
 			width = tile_sheet.getWidth();
 			height = tile_sheet.getHeight();
-			scale = 16;
+			scale = 32;
 			
 			this.world = new Matrix4f().setTranslation(new Vector3f(0));
 			this.world.scale(scale);
 			
 			int[] colorTileSheet = tile_sheet.getRGB(0,0, width, height, null, 0, width);
-			//will return all pixels in an image. 
+			int[] colorEntitySheet = entity_sheet.getRGB(0, 0,  width,  height,  null,  0, width);
 			
-			tiles = new byte[width * height];
-			bounding_boxes = new AABB[width * height];
+			tiles = new byte[width* height];
+			bounding_boxes = new AABB[width*height];
+			entities = new ArrayList<Entity>();
 			
-			for(int y = 0; y < height; y++){
-				for(int x =0; x < 0; x++){
-					int red = (colorTileSheet[x + y * width] >> 16) & 0XFF;
+			Transform transform;
+			
+			for(int y = 0; y< height; y++){
+				for (int x = 0; x < width; x++){
+					int red = (colorTileSheet[x + y * width] >> 16) & 0xFF;
+					int entity_index = (colorEntitySheet[x + y * width] >> 16) & 0xFF;
 					
-					Tile t = Tile.tiles[red]; //will cause array out of bounds error
+					int entity_alpha = (colorEntitySheet[x + y * width] >> 24) & 0xFF;
 					
-					if (t != null){
+					Tile t;
+					try {
+						t = Tile.tiles[red];
+					}catch(ArrayIndexOutOfBoundsException e){
+						t = null;
+					}
+					
+					if ( t != null){
 						setTile(t, x, y);
+					}
+					
+					if(entity_alpha > 0){
+						transform = new Transform();
+						transform.pos.x = x*2;
+						transform.pos.y = -y*2;
+						switch(entity_index) {
+						case 1:
+							Player player = new Player(transform);
+							entities.add(player);
+							camera.getPosition().set(transform.pos.mul(-scale, new Vector3f()));
+							break;
+						default:
+								
+							break;
+						}
 					}
 				}
 			}
+			
 			
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -67,106 +99,110 @@ public class World {
 	public World() {
 		width = 32;
 		height = 32;
-		scale = 16; 
+		scale = 32;
 		
 		tiles = new byte[width * height];
-		
-		bounding_boxes = new AABB[width*height];
+		bounding_boxes = new AABB[width * height];
 		
 		world = new Matrix4f().setTranslation(new Vector3f(0));
-		world.scale(scale); //we want the tiles to be 32 X 32 | Brooke
+		world.scale(scale);
 	}
 	
-	public void calculateView(Window window) {
-		viewX = (window.getWidth() / (scale * 2)) + 4;
-		viewY = (window.getHeight() / (scale * 2)) + 4;
+	public void calculateView(Window window){
+		viewX = (window.getWidth() / (scale)) + 4;
+		viewY = (window.getWidth() / (scale)) + 4;
+		
 	}
 	
-	public void render(TileRenderer render, Shader shader, Camera cam, Window window){
-//		for(int i = 0; i < height; i++){
-//			for(int j = 0; j < width; j++){
-//				render.renderTile(tiles[j+i * width], j, -i, shader, world, cam);
+	public Matrix4f getWorldMatrix(){ return world; }
+	
+	public void render(TileRenderer render, Shader shader, Camera cam){
+//		for(int i = 0; i < height; i++) {
+//			for (int j = 0; j< width; j++){
+//				render.renderTile(tiles[j + i * width], j, -i, shader, world, cam );
 //			}
 //		}
 		
-		//int posX = (int)cam.getPosition().x / (scale);//
-		int posX = ((int)cam.getPosition().x + (window.getWidth()/2)) / (scale);//center of screen w/ offset of world
-		//int posY = (int)cam.getPosition().y / (scale);//
-		int posY = ((int)cam.getPosition().y - (window.getHeight()/2)) / (scale);//center of screen w/ offset of world
-		
-		//System.out.println("X: " + posX);
-		//System.out.println("Y: " + posY);
-		
-		for(int i = 0; i < view; i++){
-			for(int j = 0; j <view; j++){
-				Tile t = getTile(i-posX, j+posY);
-				if(t != null)
-					render.renderTile(t, i - posX, -j - posY, shader, world, cam);
+		int posX = (int)cam.getPosition().x  / (scale*2); //scale used to be *2, I had to change it
+		int posY = (int)cam.getPosition().y  / (scale); //scale used to be *2, I had to change it
+	
+		for(int i = 0; i < viewX; i++){
+			for (int j = 0; j < viewY; j++){
+				Tile t = getTile(i-posX-(viewX/2)+1, j+posY-(viewY/2));
+				if(t != null){
+					render.renderTile(t, i-posX-(viewX/2)+1 , -j-posY+(viewY/2), shader, world, cam);
+				}
 			}
 		}
+		
+		for(Entity entity: entities){
+			entity.render(shader, cam, this);
+		}
 	}
 	
-	public void correctCamera(Camera camera, Window win){
+	public void update(float delta, Window window, Camera camera){
+		for ( Entity entity: entities){
+			entity.update(delta,  window,  camera, this);
+		}
+		
+		for(int i = 0; i < entities.size(); i++){
+			entities.get(i).collideWithTiles(this);
+			for(int j = i+1; j < entities.size(); j++){
+				entities.get(i).collideWithEntity(entities.get(j));
+			}
+			entities.get(i).collideWithTiles(this);
+		}
+	}
+	
+	public void correctCamera(Camera camera, Window window){
 		Vector3f pos = camera.getPosition();
 		
-		int w = -width * scale * 2; //we take the width of the level and multiple to get us actual scale of box
-		int h = height * scale * 2; //And this gives us the exact scale of our world | Brooke
-	
-		//dependant on camera projection matrix
-		//we have the origin of camera set to middle of screen
-		//if we were to change that, we would have a different algo
+		int w = -width * scale * 2;
+		int h = height * scale * 2;
 		
-		System.out.println("posX: " + pos.x);
-		System.out.println("pos y: " + pos.y);
-		
-		int new_w = w + (win.getWidth()/2) + scale;
-		
-		System.out.println("width: " + new_w);
-		
-		if(pos.x > -(win.getWidth()/2)+scale){
-			pos.x = -(win.getWidth()/2)+scale; //left
-			System.out.println("new X: " + pos.x);
+		if(pos.x > -(window.getWidth()/2) + scale){
+			pos.x = -(window.getWidth()/2) + scale;
 		}
-		//if(pos.x < w + (win.getWidth()/2) + scale); //the scale prevents the view from stopping at half the tile
-			//pos.x = w + (win.getWidth()/2) + scale;			
-		if(pos.y < (win.getHeight()/2)-scale)
-			pos.y = (win.getHeight()/2)-scale;
-		if(pos.y > h - (win.getHeight()/2) - scale)
-			pos.y = h- (win.getHeight()/2) -scale;
 		
+		if(pos.x < w + (window.getWidth()) + scale){
+			pos.x = w + (window.getWidth()) + scale;
+		}
+		
+		if(pos.y < (window.getHeight()/2) - scale){
+			pos.y = (window.getHeight()/2) - scale;
+		}
+		
+		if(pos.y > h - (window.getHeight()/2) - scale){
+			pos.y = h - (window.getHeight()/2) - scale;
+		}
 	}
 	
-	public void setTile(Tile tile, int x, int y) {
-		tiles[x + y * width] = tile.getID();
-		if(tile.isSolid()) {
+	public void setTile(Tile tile, int x, int y){
+		tiles[x + y * width] = tile.getId();
+		if(tile.isSolid()){
 			bounding_boxes[x + y * width] = new AABB(new Vector2f(x*2, -y*2), new Vector2f(1,1));
 		}else{
 			bounding_boxes[x + y * width] = null;
 		}
-		
 	}
-
+	
 	public Tile getTile(int x, int y){
-		try { //we are likely to get array error
-			return Tile.tiles[tiles[x+y * width]]; 
+		try {
+			return Tile.tiles[tiles[x + y * width]];
 		}catch(ArrayIndexOutOfBoundsException e){
 			return null;
 		}
-		
 	}
 	
 	public AABB getTileBoundingBox(int x, int y){
-		try { //we are likely to get array error
-			return bounding_boxes[x + y * width]; 
+		try {
+			return bounding_boxes[x + y * width];
 		}catch(ArrayIndexOutOfBoundsException e){
 			return null;
 		}
-		
 	}
 	
 	public int getScale() {
-		return scale; 
+		return scale;
 	}
-	
-
 }

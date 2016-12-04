@@ -760,8 +760,8 @@ public class Matrix3d implements Externalizable, Matrix3dc {
         x *= invLength;
         y *= invLength;
         z *= invLength;
-        double c = Math.cos(angle);
         double s = Math.sin(angle);
+        double c = Math.cosFromSin(s, angle);
         double omc = 1.0 - c;
         m00 = c + x*x*omc;
         m11 = c + y*y*omc;
@@ -797,8 +797,8 @@ public class Matrix3d implements Externalizable, Matrix3dc {
         x *= invLength;
         y *= invLength;
         z *= invLength;
-        double c = Math.cos(angle);
         double s = Math.sin(angle);
+        double c = Math.cosFromSin(s, angle);
         double omc = 1.0 - c;
         m00 = c + x*x*omc;
         m11 = c + y*y*omc;
@@ -819,7 +819,7 @@ public class Matrix3d implements Externalizable, Matrix3dc {
     }
 
     /**
-     * Set this matrix to a rotation equivalent to the given quaternion.
+     * Set this matrix to a rotation - and possibly scaling - equivalent to the given quaternion.
      * <p>
      * This method is equivalent to calling: <tt>rotation(q)</tt>
      * <p>
@@ -836,7 +836,7 @@ public class Matrix3d implements Externalizable, Matrix3dc {
     }
 
     /**
-     * Set this matrix to a rotation equivalent to the given quaternion.
+     * Set this matrix to a rotation - and possibly scaling - equivalent to the given quaternion.
      * <p>
      * This method is equivalent to calling: <tt>rotation(q)</tt>
      * <p>
@@ -1753,8 +1753,8 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      * @return this
      */
     public Matrix3d rotation(double angle, double x, double y, double z) {
-        double cos = Math.cos(angle);
         double sin = Math.sin(angle);
+        double cos = Math.cosFromSin(sin, angle);
         double C = 1.0 - cos;
         double xy = x * y, xz = x * z, yz = y * z;
         m00 = cos + x * x * C;
@@ -1794,8 +1794,8 @@ public class Matrix3d implements Externalizable, Matrix3dc {
             cos = 0.0;
             sin = -1.0;
         } else {
-            cos = Math.cos(ang);
             sin = Math.sin(ang);
+            cos = Math.cosFromSin(sin, ang);
         }
         m00 = 1.0;
         m01 = 0.0;
@@ -1834,8 +1834,8 @@ public class Matrix3d implements Externalizable, Matrix3dc {
             cos = 0.0;
             sin = -1.0;
         } else {
-            cos = Math.cos(ang);
             sin = Math.sin(ang);
+            cos = Math.cosFromSin(sin, ang);
         }
         m00 = cos;
         m01 = 0.0;
@@ -1874,8 +1874,8 @@ public class Matrix3d implements Externalizable, Matrix3dc {
             cos = 0.0;
             sin = -1.0;
         } else {
-            cos = Math.cos(ang);
             sin = Math.sin(ang);
+            cos = Math.cosFromSin(sin, ang);
         }
         m00 = cos;
         m01 = sin;
@@ -1908,12 +1908,12 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      * @return this
      */
     public Matrix3d rotationXYZ(double angleX, double angleY, double angleZ) {
-        double cosX =  Math.cos(angleX);
-        double sinX =  Math.sin(angleX);
-        double cosY =  Math.cos(angleY);
-        double sinY =  Math.sin(angleY);
-        double cosZ =  Math.cos(angleZ);
-        double sinZ =  Math.sin(angleZ);
+        double sinX = Math.sin(angleX);
+        double cosX = Math.cosFromSin(sinX, angleX);
+        double sinY = Math.sin(angleY);
+        double cosY = Math.cosFromSin(sinY, angleY);
+        double sinZ = Math.sin(angleZ);
+        double cosZ = Math.cosFromSin(sinZ, angleZ);
         double m_sinX = -sinX;
         double m_sinY = -sinY;
         double m_sinZ = -sinZ;
@@ -1959,12 +1959,12 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      * @return this
      */
     public Matrix3d rotationZYX(double angleZ, double angleY, double angleX) {
-        double cosZ =  Math.cos(angleZ);
-        double sinZ =  Math.sin(angleZ);
-        double cosY =  Math.cos(angleY);
-        double sinY =  Math.sin(angleY);
-        double cosX =  Math.cos(angleX);
-        double sinX =  Math.sin(angleX);
+        double sinX = Math.sin(angleX);
+        double cosX = Math.cosFromSin(sinX, angleX);
+        double sinY = Math.sin(angleY);
+        double cosY = Math.cosFromSin(sinY, angleY);
+        double sinZ = Math.sin(angleZ);
+        double cosZ = Math.cosFromSin(sinZ, angleZ);
         double m_sinZ = -sinZ;
         double m_sinY = -sinY;
         double m_sinX = -sinX;
@@ -2010,12 +2010,12 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      * @return this
      */
     public Matrix3d rotationYXZ(double angleY, double angleX, double angleZ) {
-        double cosY = Math.cos(angleY);
-        double sinY = Math.sin(angleY);
-        double cosX = Math.cos(angleX);
         double sinX = Math.sin(angleX);
-        double cosZ = Math.cos(angleZ);
+        double cosX = Math.cosFromSin(sinX, angleX);
+        double sinY = Math.sin(angleY);
+        double cosY = Math.cosFromSin(sinY, angleY);
         double sinZ = Math.sin(angleZ);
+        double cosZ = Math.cosFromSin(sinZ, angleZ);
         double m_sinY = -sinY;
         double m_sinX = -sinX;
         double m_sinZ = -sinZ;
@@ -2043,7 +2043,7 @@ public class Matrix3d implements Externalizable, Matrix3dc {
     }
 
     /**
-     * Set this matrix to the rotation transformation of the given {@link Quaterniondc}.
+     * Set this matrix to the rotation - and possibly scaling - transformation of the given {@link Quaterniondc}.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
      * counter-clockwise around the rotation axis, when viewing along the negative axis direction towards the origin.
@@ -2064,34 +2064,30 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      * @return this
      */
     public Matrix3d rotation(Quaterniondc quat) {
-        double dqx = quat.x() + quat.x();
-        double dqy = quat.y() + quat.y();
-        double dqz = quat.z() + quat.z();
-        double q00 = dqx * quat.x();
-        double q11 = dqy * quat.y();
-        double q22 = dqz * quat.z();
-        double q01 = dqx * quat.y();
-        double q02 = dqx * quat.z();
-        double q03 = dqx * quat.w();
-        double q12 = dqy * quat.z();
-        double q13 = dqy * quat.w();
-        double q23 = dqz * quat.w();
-
-        m00 = 1.0 - q11 - q22;
-        m01 = q01 + q23;
-        m02 = q02 - q13;
-        m10 = q01 - q23;
-        m11 = 1.0 - q22 - q00;
-        m12 = q12 + q03;
-        m20 = q02 + q13;
-        m21 = q12 - q03;
-        m22 = 1.0 - q11 - q00;
-
+        double w2 = quat.w() * quat.w();
+        double x2 = quat.x() * quat.x();
+        double y2 = quat.y() * quat.y();
+        double z2 = quat.z() * quat.z();
+        double zw = quat.z() * quat.w();
+        double xy = quat.x() * quat.y();
+        double xz = quat.x() * quat.z();
+        double yw = quat.y() * quat.w();
+        double yz = quat.y() * quat.z();
+        double xw = quat.x() * quat.w();
+        m00 = w2 + x2 - z2 - y2;
+        m01 = xy + zw + zw + xy;
+        m02 = xz - yw + xz - yw;
+        m10 = -zw + xy - zw + xy;
+        m11 = y2 - z2 + w2 - x2;
+        m12 = yz + yz + xw + xw;
+        m20 = yw + xz + xz + yw;
+        m21 = yz + yz - xw - xw;
+        m22 = z2 - y2 - x2 + w2;
         return this;
     }
 
     /**
-     * Set this matrix to the rotation transformation of the given {@link Quaternionfc}.
+     * Set this matrix to the rotation - and possibly scaling - transformation of the given {@link Quaternionfc}.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
      * counter-clockwise around the rotation axis, when viewing along the negative axis direction towards the origin.
@@ -2112,29 +2108,25 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      * @return this
      */
     public Matrix3d rotation(Quaternionfc quat) {
-        double dqx = quat.x() + quat.x();
-        double dqy = quat.y() + quat.y();
-        double dqz = quat.z() + quat.z();
-        double q00 = dqx * quat.x();
-        double q11 = dqy * quat.y();
-        double q22 = dqz * quat.z();
-        double q01 = dqx * quat.y();
-        double q02 = dqx * quat.z();
-        double q03 = dqx * quat.w();
-        double q12 = dqy * quat.z();
-        double q13 = dqy * quat.w();
-        double q23 = dqz * quat.w();
-
-        m00 = 1.0 - q11 - q22;
-        m01 = q01 + q23;
-        m02 = q02 - q13;
-        m10 = q01 - q23;
-        m11 = 1.0 - q22 - q00;
-        m12 = q12 + q03;
-        m20 = q02 + q13;
-        m21 = q12 - q03;
-        m22 = 1.0 - q11 - q00;
-
+        double w2 = quat.w() * quat.w();
+        double x2 = quat.x() * quat.x();
+        double y2 = quat.y() * quat.y();
+        double z2 = quat.z() * quat.z();
+        double zw = quat.z() * quat.w();
+        double xy = quat.x() * quat.y();
+        double xz = quat.x() * quat.z();
+        double yw = quat.y() * quat.w();
+        double yz = quat.y() * quat.z();
+        double xw = quat.x() * quat.w();
+        m00 = w2 + x2 - z2 - y2;
+        m01 = xy + zw + zw + xy;
+        m02 = xz - yw + xz - yw;
+        m10 = -zw + xy - zw + xy;
+        m11 = y2 - z2 + w2 - x2;
+        m12 = yz + yz + xw + xw;
+        m20 = yw + xz + xz + yw;
+        m21 = yz + yz - xw - xw;
+        m22 = z2 - y2 - x2 + w2;
         return this;
     }
 
@@ -2203,8 +2195,8 @@ public class Matrix3d implements Externalizable, Matrix3dc {
             cos = 0.0;
             sin = -1.0;
         } else {
-            cos = Math.cos(ang);
             sin = Math.sin(ang);
+            cos = Math.cosFromSin(sin, ang);
         }
         double rm11 = cos;
         double rm21 = -sin;
@@ -2267,8 +2259,8 @@ public class Matrix3d implements Externalizable, Matrix3dc {
             cos = 0.0;
             sin = -1.0;
         } else {
-            cos = Math.cos(ang);
             sin = Math.sin(ang);
+            cos = Math.cosFromSin(sin, ang);
         }
         double rm00 = cos;
         double rm20 = sin;
@@ -2331,8 +2323,8 @@ public class Matrix3d implements Externalizable, Matrix3dc {
             cos = 0.0;
             sin = -1.0;
         } else {
-            cos = Math.cos(ang);
             sin = Math.sin(ang);
+            cos = Math.cosFromSin(sin, ang);
         }
         double rm00 = cos;
         double rm10 = -sin;
@@ -2411,12 +2403,12 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      * @see org.joml.Matrix3dc#rotateXYZ(double, double, double, org.joml.Matrix3d)
      */
     public Matrix3d rotateXYZ(double angleX, double angleY, double angleZ, Matrix3d dest) {
-        double cosX = Math.cos(angleX);
         double sinX = Math.sin(angleX);
-        double cosY = Math.cos(angleY);
+        double cosX = Math.cosFromSin(sinX, angleX);
         double sinY = Math.sin(angleY);
-        double cosZ = Math.cos(angleZ);
+        double cosY = Math.cosFromSin(sinY, angleY);
         double sinZ = Math.sin(angleZ);
+        double cosZ = Math.cosFromSin(sinZ, angleZ);
         double m_sinX = -sinX;
         double m_sinY = -sinY;
         double m_sinZ = -sinZ;
@@ -2476,12 +2468,12 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      * @see org.joml.Matrix3dc#rotateZYX(double, double, double, org.joml.Matrix3d)
      */
     public Matrix3d rotateZYX(double angleZ, double angleY, double angleX, Matrix3d dest) {
-        double cosZ = Math.cos(angleZ);
-        double sinZ = Math.sin(angleZ);
-        double cosY = Math.cos(angleY);
-        double sinY = Math.sin(angleY);
-        double cosX = Math.cos(angleX);
         double sinX = Math.sin(angleX);
+        double cosX = Math.cosFromSin(sinX, angleX);
+        double sinY = Math.sin(angleY);
+        double cosY = Math.cosFromSin(sinY, angleY);
+        double sinZ = Math.sin(angleZ);
+        double cosZ = Math.cosFromSin(sinZ, angleZ);
         double m_sinZ = -sinZ;
         double m_sinY = -sinY;
         double m_sinX = -sinX;
@@ -2564,12 +2556,12 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      * @see org.joml.Matrix3dc#rotateYXZ(double, double, double, org.joml.Matrix3d)
      */
     public Matrix3d rotateYXZ(double angleY, double angleX, double angleZ, Matrix3d dest) {
-        double cosY = Math.cos(angleY);
-        double sinY = Math.sin(angleY);
-        double cosX = Math.cos(angleX);
         double sinX = Math.sin(angleX);
-        double cosZ = Math.cos(angleZ);
+        double cosX = Math.cosFromSin(sinX, angleX);
+        double sinY = Math.sin(angleY);
+        double cosY = Math.cosFromSin(sinY, angleY);
         double sinZ = Math.sin(angleZ);
+        double cosZ = Math.cosFromSin(sinZ, angleZ);
         double m_sinY = -sinY;
         double m_sinX = -sinX;
         double m_sinZ = -sinZ;
@@ -2634,7 +2626,7 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      */
     public Matrix3d rotate(double ang, double x, double y, double z, Matrix3d dest) {
         double s = Math.sin(ang);
-        double c = Math.cos(ang);
+        double c = Math.cosFromSin(s, ang);
         double C = 1.0 - c;
 
         // rotation matrix elements:
@@ -2710,7 +2702,7 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      */
     public Matrix3d rotateLocal(double ang, double x, double y, double z, Matrix3d dest) {
         double s = Math.sin(ang);
-        double c = Math.cos(ang);
+        double c = Math.cosFromSin(s, ang);
         double C = 1.0 - c;
         double xx = x * x, xy = x * y, xz = x * z;
         double yy = y * y, yz = y * z;
@@ -2782,7 +2774,7 @@ public class Matrix3d implements Externalizable, Matrix3dc {
     }
 
     /**
-     * Pre-multiply the rotation transformation of the given {@link Quaterniondc} to this matrix and store
+     * Pre-multiply the rotation - and possibly scaling - transformation of the given {@link Quaterniondc} to this matrix and store
      * the result in <code>dest</code>.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
@@ -2808,27 +2800,25 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      * @return dest
      */
     public Matrix3d rotateLocal(Quaterniondc quat, Matrix3d dest) {
-        double dqx = quat.x() + quat.x();
-        double dqy = quat.y() + quat.y();
-        double dqz = quat.z() + quat.z();
-        double q00 = dqx * quat.x();
-        double q11 = dqy * quat.y();
-        double q22 = dqz * quat.z();
-        double q01 = dqx * quat.y();
-        double q02 = dqx * quat.z();
-        double q03 = dqx * quat.w();
-        double q12 = dqy * quat.z();
-        double q13 = dqy * quat.w();
-        double q23 = dqz * quat.w();
-        double lm00 = 1.0 - q11 - q22;
-        double lm01 = q01 + q23;
-        double lm02 = q02 - q13;
-        double lm10 = q01 - q23;
-        double lm11 = 1.0 - q22 - q00;
-        double lm12 = q12 + q03;
-        double lm20 = q02 + q13;
-        double lm21 = q12 - q03;
-        double lm22 = 1.0 - q11 - q00;
+        double w2 = quat.w() * quat.w();
+        double x2 = quat.x() * quat.x();
+        double y2 = quat.y() * quat.y();
+        double z2 = quat.z() * quat.z();
+        double zw = quat.z() * quat.w();
+        double xy = quat.x() * quat.y();
+        double xz = quat.x() * quat.z();
+        double yw = quat.y() * quat.w();
+        double yz = quat.y() * quat.z();
+        double xw = quat.x() * quat.w();
+        double lm00 = w2 + x2 - z2 - y2;
+        double lm01 = xy + zw + zw + xy;
+        double lm02 = xz - yw + xz - yw;
+        double lm10 = -zw + xy - zw + xy;
+        double lm11 = y2 - z2 + w2 - x2;
+        double lm12 = yz + yz + xw + xw;
+        double lm20 = yw + xz + xz + yw;
+        double lm21 = yz + yz - xw - xw;
+        double lm22 = z2 - y2 - x2 + w2;
         double nm00 = lm00 * m00 + lm10 * m01 + lm20 * m02;
         double nm01 = lm01 * m00 + lm11 * m01 + lm21 * m02;
         double nm02 = lm02 * m00 + lm12 * m01 + lm22 * m02;
@@ -2851,7 +2841,7 @@ public class Matrix3d implements Externalizable, Matrix3dc {
     }
 
     /**
-     * Pre-multiply the rotation transformation of the given {@link Quaterniondc} to this matrix.
+     * Pre-multiply the rotation - and possibly scaling - transformation of the given {@link Quaterniondc} to this matrix.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
      * counter-clockwise around the rotation axis, when viewing along the negative axis direction towards the origin.
@@ -2878,7 +2868,7 @@ public class Matrix3d implements Externalizable, Matrix3dc {
     }
 
     /**
-     * Pre-multiply the rotation transformation of the given {@link Quaternionfc} to this matrix and store
+     * Pre-multiply the rotation - and possibly scaling - transformation of the given {@link Quaternionfc} to this matrix and store
      * the result in <code>dest</code>.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
@@ -2904,27 +2894,25 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      * @return dest
      */
     public Matrix3d rotateLocal(Quaternionfc quat, Matrix3d dest) {
-        double dqx = quat.x() + quat.x();
-        double dqy = quat.y() + quat.y();
-        double dqz = quat.z() + quat.z();
-        double q00 = dqx * quat.x();
-        double q11 = dqy * quat.y();
-        double q22 = dqz * quat.z();
-        double q01 = dqx * quat.y();
-        double q02 = dqx * quat.z();
-        double q03 = dqx * quat.w();
-        double q12 = dqy * quat.z();
-        double q13 = dqy * quat.w();
-        double q23 = dqz * quat.w();
-        double lm00 = 1.0 - q11 - q22;
-        double lm01 = q01 + q23;
-        double lm02 = q02 - q13;
-        double lm10 = q01 - q23;
-        double lm11 = 1.0 - q22 - q00;
-        double lm12 = q12 + q03;
-        double lm20 = q02 + q13;
-        double lm21 = q12 - q03;
-        double lm22 = 1.0 - q11 - q00;
+        double w2 = quat.w() * quat.w();
+        double x2 = quat.x() * quat.x();
+        double y2 = quat.y() * quat.y();
+        double z2 = quat.z() * quat.z();
+        double zw = quat.z() * quat.w();
+        double xy = quat.x() * quat.y();
+        double xz = quat.x() * quat.z();
+        double yw = quat.y() * quat.w();
+        double yz = quat.y() * quat.z();
+        double xw = quat.x() * quat.w();
+        double lm00 = w2 + x2 - z2 - y2;
+        double lm01 = xy + zw + zw + xy;
+        double lm02 = xz - yw + xz - yw;
+        double lm10 = -zw + xy - zw + xy;
+        double lm11 = y2 - z2 + w2 - x2;
+        double lm12 = yz + yz + xw + xw;
+        double lm20 = yw + xz + xz + yw;
+        double lm21 = yz + yz - xw - xw;
+        double lm22 = z2 - y2 - x2 + w2;
         double nm00 = lm00 * m00 + lm10 * m01 + lm20 * m02;
         double nm01 = lm01 * m00 + lm11 * m01 + lm21 * m02;
         double nm02 = lm02 * m00 + lm12 * m01 + lm22 * m02;
@@ -2947,7 +2935,7 @@ public class Matrix3d implements Externalizable, Matrix3dc {
     }
 
     /**
-     * Pre-multiply the rotation transformation of the given {@link Quaternionfc} to this matrix.
+     * Pre-multiply the rotation - and possibly scaling - transformation of the given {@link Quaternionfc} to this matrix.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
      * counter-clockwise around the rotation axis, when viewing along the negative axis direction towards the origin.
@@ -2974,7 +2962,7 @@ public class Matrix3d implements Externalizable, Matrix3dc {
     }
 
     /**
-     * Apply the rotation transformation of the given {@link Quaterniondc} to this matrix.
+     * Apply the rotation - and possibly scaling - transformation of the given {@link Quaterniondc} to this matrix.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
      * counter-clockwise around the rotation axis, when viewing along the negative axis direction towards the origin.
@@ -3001,7 +2989,7 @@ public class Matrix3d implements Externalizable, Matrix3dc {
     }
 
     /**
-     * Apply the rotation transformation of the given {@link Quaterniondc} to this matrix and store
+     * Apply the rotation - and possibly scaling - transformation of the given {@link Quaterniondc} to this matrix and store
      * the result in <code>dest</code>.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
@@ -3027,29 +3015,25 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      * @return dest
      */
     public Matrix3d rotate(Quaterniondc quat, Matrix3d dest) {
-        double dqx = quat.x() + quat.x();
-        double dqy = quat.y() + quat.y();
-        double dqz = quat.z() + quat.z();
-        double q00 = dqx * quat.x();
-        double q11 = dqy * quat.y();
-        double q22 = dqz * quat.z();
-        double q01 = dqx * quat.y();
-        double q02 = dqx * quat.z();
-        double q03 = dqx * quat.w();
-        double q12 = dqy * quat.z();
-        double q13 = dqy * quat.w();
-        double q23 = dqz * quat.w();
-
-        double rm00 = 1.0 - q11 - q22;
-        double rm01 = q01 + q23;
-        double rm02 = q02 - q13;
-        double rm10 = q01 - q23;
-        double rm11 = 1.0 - q22 - q00;
-        double rm12 = q12 + q03;
-        double rm20 = q02 + q13;
-        double rm21 = q12 - q03;
-        double rm22 = 1.0 - q11 - q00;
-
+        double w2 = quat.w() * quat.w();
+        double x2 = quat.x() * quat.x();
+        double y2 = quat.y() * quat.y();
+        double z2 = quat.z() * quat.z();
+        double zw = quat.z() * quat.w();
+        double xy = quat.x() * quat.y();
+        double xz = quat.x() * quat.z();
+        double yw = quat.y() * quat.w();
+        double yz = quat.y() * quat.z();
+        double xw = quat.x() * quat.w();
+        double rm00 = w2 + x2 - z2 - y2;
+        double rm01 = xy + zw + zw + xy;
+        double rm02 = xz - yw + xz - yw;
+        double rm10 = -zw + xy - zw + xy;
+        double rm11 = y2 - z2 + w2 - x2;
+        double rm12 = yz + yz + xw + xw;
+        double rm20 = yw + xz + xz + yw;
+        double rm21 = yz + yz - xw - xw;
+        double rm22 = z2 - y2 - x2 + w2;
         double nm00 = m00 * rm00 + m10 * rm01 + m20 * rm02;
         double nm01 = m01 * rm00 + m11 * rm01 + m21 * rm02;
         double nm02 = m02 * rm00 + m12 * rm01 + m22 * rm02;
@@ -3065,12 +3049,11 @@ public class Matrix3d implements Externalizable, Matrix3dc {
         dest.m10 = nm10;
         dest.m11 = nm11;
         dest.m12 = nm12;
-
         return dest;
     }
 
     /**
-     * Apply the rotation transformation of the given {@link Quaternionfc} to this matrix.
+     * Apply the rotation - and possibly scaling - transformation of the given {@link Quaternionfc} to this matrix.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
      * counter-clockwise around the rotation axis, when viewing along the negative axis direction towards the origin.
@@ -3097,7 +3080,7 @@ public class Matrix3d implements Externalizable, Matrix3dc {
     }
 
     /**
-     * Apply the rotation transformation of the given {@link Quaternionfc} to this matrix and store
+     * Apply the rotation - and possibly scaling - transformation of the given {@link Quaternionfc} to this matrix and store
      * the result in <code>dest</code>.
      * <p>
      * When used with a right-handed coordinate system, the produced rotation will rotate a vector 
@@ -3123,29 +3106,25 @@ public class Matrix3d implements Externalizable, Matrix3dc {
      * @return dest
      */
     public Matrix3d rotate(Quaternionfc quat, Matrix3d dest) {
-        double dqx = quat.x() + quat.x();
-        double dqy = quat.y() + quat.y();
-        double dqz = quat.z() + quat.z();
-        double q00 = dqx * quat.x();
-        double q11 = dqy * quat.y();
-        double q22 = dqz * quat.z();
-        double q01 = dqx * quat.y();
-        double q02 = dqx * quat.z();
-        double q03 = dqx * quat.w();
-        double q12 = dqy * quat.z();
-        double q13 = dqy * quat.w();
-        double q23 = dqz * quat.w();
-
-        double rm00 = 1.0 - q11 - q22;
-        double rm01 = q01 + q23;
-        double rm02 = q02 - q13;
-        double rm10 = q01 - q23;
-        double rm11 = 1.0 - q22 - q00;
-        double rm12 = q12 + q03;
-        double rm20 = q02 + q13;
-        double rm21 = q12 - q03;
-        double rm22 = 1.0 - q11 - q00;
-
+        double w2 = quat.w() * quat.w();
+        double x2 = quat.x() * quat.x();
+        double y2 = quat.y() * quat.y();
+        double z2 = quat.z() * quat.z();
+        double zw = quat.z() * quat.w();
+        double xy = quat.x() * quat.y();
+        double xz = quat.x() * quat.z();
+        double yw = quat.y() * quat.w();
+        double yz = quat.y() * quat.z();
+        double xw = quat.x() * quat.w();
+        double rm00 = w2 + x2 - z2 - y2;
+        double rm01 = xy + zw + zw + xy;
+        double rm02 = xz - yw + xz - yw;
+        double rm10 = -zw + xy - zw + xy;
+        double rm11 = y2 - z2 + w2 - x2;
+        double rm12 = yz + yz + xw + xw;
+        double rm20 = yw + xz + xz + yw;
+        double rm21 = yz + yz - xw - xw;
+        double rm22 = z2 - y2 - x2 + w2;
         double nm00 = m00 * rm00 + m10 * rm01 + m20 * rm02;
         double nm01 = m01 * rm00 + m11 * rm01 + m21 * rm02;
         double nm02 = m02 * rm00 + m12 * rm01 + m22 * rm02;
@@ -3161,7 +3140,6 @@ public class Matrix3d implements Externalizable, Matrix3dc {
         dest.m10 = nm10;
         dest.m11 = nm11;
         dest.m12 = nm12;
-
         return dest;
     }
 

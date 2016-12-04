@@ -30,8 +30,7 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 
 /**
- * Contains the definition and functions for rotations expressed as
- * 4-dimensional vectors
+ * * Quaternion of 4 double-precision floats which can represent rotation and uniform scaling.
  *
  * @author Richard Greenlees
  * @author Kai Burjack
@@ -386,7 +385,7 @@ public class Quaterniond implements Externalizable, Quaterniondc {
         x = axisAngle.x * s;
         y = axisAngle.y * s;
         z = axisAngle.z * s;
-        w = Math.cos(axisAngle.angle * 0.5);
+        w = Math.cosFromSin(s, axisAngle.angle * 0.5);
     }
 
     /**
@@ -400,7 +399,7 @@ public class Quaterniond implements Externalizable, Quaterniondc {
         x = axisAngle.x * s;
         y = axisAngle.y * s;
         z = axisAngle.z * s;
-        w = Math.cos(axisAngle.angle * 0.5);
+        w = Math.cosFromSin(s, axisAngle.angle * 0.5);
     }
 
     /**
@@ -681,7 +680,7 @@ public class Quaterniond implements Externalizable, Quaterniondc {
         this.x = x * s;
         this.y = y * s;
         this.z = z * s;
-        this.w = Math.cos(angle * 0.5);
+        this.w = Math.cosFromSin(s, angle * 0.5);
         return this;
     }
 
@@ -949,7 +948,7 @@ public class Quaterniond implements Externalizable, Quaterniondc {
         x = axisX / vLength * sinAngle;
         y = axisY / vLength * sinAngle;
         z = axisZ / vLength * sinAngle;
-        w = Math.cos(hangle);
+        w = Math.cosFromSin(sinAngle, hangle);
         return this;
     }
 
@@ -1142,21 +1141,28 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      * @see org.joml.Quaterniondc#transform(double, double, double, org.joml.Vector3d)
      */
     public Vector3d transform(double x, double y, double z, Vector3d dest) {
-        double num = this.x + this.x;
-        double num2 = this.y + this.y;
-        double num3 = this.z + this.z;
-        double num4 = this.x * num;
-        double num5 = this.y * num2;
-        double num6 = this.z * num3;
-        double num7 = this.x * num2;
-        double num8 = this.x * num3;
-        double num9 = this.y * num3;
-        double num10 = this.w * num;
-        double num11 = this.w * num2;
-        double num12 = this.w * num3;
-        dest.set((1.0 - (num5 + num6)) * x + (num7 - num12) * y + (num8 + num11) * z,
-                 (num7 + num12) * x + (1.0 - (num4 + num6)) * y + (num9 - num10) * z,
-                 (num8 - num11) * x + (num9 + num10) * y + (1.0 - (num4 + num5)) * z);
+        double w2 = this.w * this.w;
+        double x2 = this.x * this.x;
+        double y2 = this.y * this.y;
+        double z2 = this.z * this.z;
+        double zw = this.z * this.w;
+        double xy = this.x * this.y;
+        double xz = this.x * this.z;
+        double yw = this.y * this.w;
+        double yz = this.y * this.z;
+        double xw = this.x * this.w;
+        double m00 = w2 + x2 - z2 - y2;
+        double m01 = xy + zw + zw + xy;
+        double m02 = xz - yw + xz - yw;
+        double m10 = -zw + xy - zw + xy;
+        double m11 = y2 - z2 + w2 - x2;
+        double m12 = yz + yz + xw + xw;
+        double m20 = yw + xz + xz + yw;
+        double m21 = yz + yz - xw - xw;
+        double m22 = z2 - y2 - x2 + w2;
+        dest.x = m00 * x + m10 * y + m20 * z;
+        dest.y = m01 * x + m11 * y + m21 * z;
+        dest.z = m02 * x + m12 * y + m22 * z;
         return dest;
     }
 
@@ -1171,22 +1177,28 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      * @see org.joml.Quaterniondc#transform(double, double, double, org.joml.Vector4d)
      */
     public Vector4d transform(double x, double y, double z, Vector4d dest) {
-        double num = this.x + this.x;
-        double num2 = this.y + this.y;
-        double num3 = this.z + this.z;
-        double num4 = this.x * num;
-        double num5 = this.y * num2;
-        double num6 = this.z * num3;
-        double num7 = this.x * num2;
-        double num8 = this.x * num3;
-        double num9 = this.y * num3;
-        double num10 = this.w * num;
-        double num11 = this.w * num2;
-        double num12 = this.w * num3;
-        dest.set((1.0 - (num5 + num6)) * x + (num7 - num12) * y + (num8 + num11) * z,
-                 (num7 + num12) * x + (1.0 - (num4 + num6)) * y + (num9 - num10) * z,
-                 (num8 - num11) * x + (num9 + num10) * y + (1.0 - (num4 + num5)) * z,
-                 dest.w);
+        double w2 = this.w * this.w;
+        double x2 = this.x * this.x;
+        double y2 = this.y * this.y;
+        double z2 = this.z * this.z;
+        double zw = this.z * this.w;
+        double xy = this.x * this.y;
+        double xz = this.x * this.z;
+        double yw = this.y * this.w;
+        double yz = this.y * this.z;
+        double xw = this.x * this.w;
+        double m00 = w2 + x2 - z2 - y2;
+        double m01 = xy + zw + zw + xy;
+        double m02 = xz - yw + xz - yw;
+        double m10 = -zw + xy - zw + xy;
+        double m11 = y2 - z2 + w2 - x2;
+        double m12 = yz + yz + xw + xw;
+        double m20 = yw + xz + xz + yw;
+        double m21 = yz + yz - xw - xw;
+        double m22 = z2 - y2 - x2 + w2;
+        dest.x = m00 * x + m10 * y + m20 * z;
+        dest.y = m01 * x + m11 * y + m21 * z;
+        dest.z = m02 * x + m12 * y + m22 * z;
         return dest;
     }
 
@@ -1307,11 +1319,11 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      */
     public Quaterniond rotationXYZ(double angleX, double angleY, double angleZ) {
         double sx = Math.sin(angleX * 0.5);
-        double cx = Math.cos(angleX * 0.5);
+        double cx = Math.cosFromSin(sx, angleX * 0.5);
         double sy = Math.sin(angleY * 0.5);
-        double cy = Math.cos(angleY * 0.5);
+        double cy = Math.cosFromSin(sy, angleY * 0.5);
         double sz = Math.sin(angleZ * 0.5);
-        double cz = Math.cos(angleZ * 0.5);
+        double cz = Math.cosFromSin(sz, angleZ * 0.5);
 
         double cycz = cy * cz;
         double sysz = sy * sz;
@@ -1342,11 +1354,11 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      */
     public Quaterniond rotationZYX(double angleZ, double angleY, double angleX) {
         double sx = Math.sin(angleX * 0.5);
-        double cx = Math.cos(angleX * 0.5);
+        double cx = Math.cosFromSin(sx, angleX * 0.5);
         double sy = Math.sin(angleY * 0.5);
-        double cy = Math.cos(angleY * 0.5);
+        double cy = Math.cosFromSin(sy, angleY * 0.5);
         double sz = Math.sin(angleZ * 0.5);
-        double cz = Math.cos(angleZ * 0.5);
+        double cz = Math.cosFromSin(sz, angleZ * 0.5);
 
         double cycz = cy * cz;
         double sysz = sy * sz;
@@ -1377,11 +1389,11 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      */
     public Quaterniond rotationYXZ(double angleY, double angleX, double angleZ) {
         double sx = Math.sin(angleX * 0.5);
-        double cx = Math.cos(angleX * 0.5);
+        double cx = Math.cosFromSin(sx, angleX * 0.5);
         double sy = Math.sin(angleY * 0.5);
-        double cy = Math.cos(angleY * 0.5);
+        double cy = Math.cosFromSin(sy, angleY * 0.5);
         double sz = Math.sin(angleZ * 0.5);
-        double cz = Math.cos(angleZ * 0.5);
+        double cz = Math.cosFromSin(sz, angleZ * 0.5);
 
         double x = cy * sx;
         double y = sy * cx;
@@ -1396,8 +1408,8 @@ public class Quaterniond implements Externalizable, Quaterniondc {
     }
 
     /**
-     * Interpolate between <code>this</code> quaternion and the specified
-     * <code>target</code> using spherical linear interpolation using the specified interpolation factor <code>alpha</code>.
+     * Interpolate between <code>this</code> {@link #normalize() unit} quaternion and the specified
+     * <code>target</code> {@link #normalize() unit} quaternion using spherical linear interpolation using the specified interpolation factor <code>alpha</code>.
      * <p>
      * This method resorts to non-spherical linear interpolation when the absolute dot product between <code>this</code> and <code>target</code> is
      * below <tt>1E-6</tt>.
@@ -1469,17 +1481,11 @@ public class Quaterniond implements Externalizable, Quaterniondc {
     }
 
     /**
-     * Scale the rotation represented by this quaternion by the given <code>factor</code> using spherical linear interpolation.
-     * <p>
-     * This method is equivalent to performing a spherical linear interpolation between the unit quaternion and <code>this</code>,
-     * and thus equivalent to calling: <tt>new Quaterniond().slerp(this, factor)</tt>
-     * <p>
-     * Reference: <a href="http://fabiensanglard.net/doom3_documentation/37725-293747_293747.pdf">http://fabiensanglard.net</a>
-     * 
-     * @see #slerp(Quaterniondc, double)
+     * Apply scaling to this quaternion, which results in any vector transformed by this quaternion to change
+     * its length by the given <code>factor</code>.
      * 
      * @param factor
-     *          the scaling/interpolation factor, within <tt>[0..1]</tt>
+     *          the scaling factor
      * @return this
      */
     public Quaterniond scale(double factor) {
@@ -1490,23 +1496,28 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      * @see org.joml.Quaterniondc#scale(double, org.joml.Quaterniond)
      */
     public Quaterniond scale(double factor, Quaterniond dest) {
-        double absCosom = Math.abs(w);
-        double scale0, scale1;
-        if (1.0 - absCosom > 1E-6) {
-            double sinSqr = 1.0 - absCosom * absCosom;
-            double sinom = 1.0 / Math.sqrt(sinSqr);
-            double omega = Math.atan2(sinSqr * sinom, absCosom);
-            scale0 = Math.sin((1.0 - factor) * omega) * sinom;
-            scale1 = Math.sin(factor * omega) * sinom;
-        } else {
-            scale0 = 1.0 - factor;
-            scale1 = factor;
-        }
-        scale1 = w >= 0.0 ? scale1 : -scale1;
-        dest.x = scale1 * x;
-        dest.y = scale1 * y;
-        dest.z = scale1 * z;
-        dest.w = scale0 + scale1 * w;
+        double sqrt = Math.sqrt(factor);
+        dest.x = sqrt * x;
+        dest.y = sqrt * y;
+        dest.z = sqrt * z;
+        dest.w = sqrt * w;
+        return this;
+    }
+
+    /**
+     * Set this quaternion to represent scaling, which results in a transformed vector to change
+     * its length by the given <code>factor</code>.
+     * 
+     * @param factor
+     *          the scaling factor
+     * @return this
+     */
+    public Quaterniond scaling(float factor) {
+        double sqrt = Math.sqrt(factor);
+        this.x = 0.0;
+        this.y = 0.0;
+        this.z = 0.0;
+        this.w = sqrt;
         return this;
     }
 
@@ -2093,7 +2104,7 @@ public class Quaterniond implements Externalizable, Quaterniondc {
         x = axisX * invVLength * sinAngle;
         y = axisY * invVLength * sinAngle;
         z = axisZ * invVLength * sinAngle;
-        w = (float) Math.cos(hangle);
+        w = (float) Math.cosFromSin(sinAngle, hangle);
 
         return this;
     }
@@ -2120,8 +2131,9 @@ public class Quaterniond implements Externalizable, Quaterniondc {
             s = 1.0 - thetaMagSq / 6.0;
         } else {
             double thetaMag = Math.sqrt(thetaMagSq);
-            w = Math.cos(thetaMag);
-            s = Math.sin(thetaMag) / thetaMag;
+            double sin = Math.sin(thetaMag);
+            s = sin / thetaMag;
+            w = Math.cosFromSin(sin, thetaMag);
         }
         x = thetaX * s;
         y = thetaY * s;
@@ -2137,8 +2149,8 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      * @return this
      */
     public Quaterniond rotationX(double angle) {
-        double cos = Math.cos(angle * 0.5);
         double sin = Math.sin(angle * 0.5);
+        double cos = Math.cosFromSin(sin, angle * 0.5);
         w = cos;
         x = sin;
         y = 0.0;
@@ -2154,8 +2166,8 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      * @return this
      */
     public Quaterniond rotationY(double angle) {
-        double cos = Math.cos(angle * 0.5);
         double sin = Math.sin(angle * 0.5);
+        double cos = Math.cosFromSin(sin, angle * 0.5);
         w = cos;
         x = 0.0;
         y = sin;
@@ -2171,8 +2183,8 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      * @return this
      */
     public Quaterniond rotationZ(double angle) {
-        double cos = Math.cos(angle * 0.5);
         double sin = Math.sin(angle * 0.5);
+        double cos = Math.cosFromSin(sin, angle * 0.5);
         w = cos;
         x = 0.0;
         y = 0.0;
@@ -2320,8 +2332,9 @@ public class Quaterniond implements Externalizable, Quaterniondc {
             s = 1.0 - thetaMagSq / 6.0;
         } else {
             double thetaMag = Math.sqrt(thetaMagSq);
-            dqW = Math.cos(thetaMag);
-            s = Math.sin(thetaMag) / thetaMag;
+            double sin = Math.sin(thetaMag);
+            s = sin / thetaMag;
+            dqW = Math.cosFromSin(sin, thetaMag);
         }
         dqX = thetaX * s;
         dqY = thetaY * s;
@@ -2390,8 +2403,9 @@ public class Quaterniond implements Externalizable, Quaterniondc {
             s = 1.0 - thetaMagSq / 6.0;
         } else {
             double thetaMag = Math.sqrt(thetaMagSq);
-            dqW = Math.cos(thetaMag);
-            s = Math.sin(thetaMag) / thetaMag;
+            double sin = Math.sin(thetaMag);
+            s = sin / thetaMag;
+            dqW = Math.cosFromSin(sin, thetaMag);
         }
         dqX = thetaX * s;
         dqY = thetaY * s;
@@ -2426,8 +2440,8 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      * @see org.joml.Quaterniondc#rotateX(double, org.joml.Quaterniond)
      */
     public Quaterniond rotateX(double angle, Quaterniond dest) {
-        double cos = Math.cos(angle * 0.5);
         double sin = Math.sin(angle * 0.5);
+        double cos = Math.cosFromSin(sin, angle * 0.5);
         dest.set(w * sin + x * cos,
                  y * cos + z * sin,
                  z * cos - y * sin,
@@ -2457,8 +2471,8 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      * @see org.joml.Quaterniondc#rotateY(double, org.joml.Quaterniond)
      */
     public Quaterniond rotateY(double angle, Quaterniond dest) {
-        double cos = Math.cos(angle * 0.5);
         double sin = Math.sin(angle * 0.5);
+        double cos = Math.cosFromSin(sin, angle * 0.5);
         dest.set(x * cos - z * sin,
                  w * sin + y * cos,
                  x * sin + z * cos,
@@ -2488,8 +2502,8 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      * @see org.joml.Quaterniondc#rotateZ(double, org.joml.Quaterniond)
      */
     public Quaterniond rotateZ(double angle, Quaterniond dest) {
-        double cos = Math.cos(angle * 0.5);
         double sin = Math.sin(angle * 0.5);
+        double cos = Math.cosFromSin(sin, angle * 0.5);
         dest.set(x * cos + y * sin,
                  y * cos - x * sin,
                  w * sin + z * cos,
@@ -2519,7 +2533,7 @@ public class Quaterniond implements Externalizable, Quaterniondc {
     public Quaterniond rotateLocalX(double angle, Quaterniond dest) {
         double hangle = angle * 0.5;
         double s = Math.sin(hangle);
-        double c = Math.cos(hangle);
+        double c = Math.cosFromSin(s, hangle);
         dest.set(c * x + s * w,
                  c * y - s * z,
                  c * z + s * y,
@@ -2549,7 +2563,7 @@ public class Quaterniond implements Externalizable, Quaterniondc {
     public Quaterniond rotateLocalY(double angle, Quaterniond dest) {
         double hangle = angle * 0.5;
         double s = Math.sin(hangle);
-        double c = Math.cos(hangle);
+        double c = Math.cosFromSin(s, hangle);
         dest.set(c * x + s * z,
                  c * y + s * w,
                  c * z - s * x,
@@ -2579,7 +2593,7 @@ public class Quaterniond implements Externalizable, Quaterniondc {
     public Quaterniond rotateLocalZ(double angle, Quaterniond dest) {
         double hangle = angle * 0.5;
         double s = Math.sin(hangle);
-        double c = Math.cos(hangle);
+        double c = Math.cosFromSin(s, hangle);
         dest.set(c * x - s * y,
                  c * y + s * x,
                  c * z + s * w,
@@ -2615,11 +2629,11 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      */
     public Quaterniond rotateXYZ(double angleX, double angleY, double angleZ, Quaterniond dest) {
         double sx =  Math.sin(angleX * 0.5);
-        double cx =  Math.cos(angleX * 0.5);
+        double cx =  Math.cosFromSin(sx, angleX * 0.5);
         double sy =  Math.sin(angleY * 0.5);
-        double cy =  Math.cos(angleY * 0.5);
+        double cy =  Math.cosFromSin(sy, angleY * 0.5);
         double sz =  Math.sin(angleZ * 0.5);
-        double cz =  Math.cos(angleZ * 0.5);
+        double cz =  Math.cosFromSin(sz, angleZ * 0.5);
 
         double cycz = cy * cz;
         double sysz = sy * sz;
@@ -2665,11 +2679,11 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      */
     public Quaterniond rotateZYX(double angleZ, double angleY, double angleX, Quaterniond dest) {
         double sx =  Math.sin(angleX * 0.5);
-        double cx =  Math.cos(angleX * 0.5);
+        double cx =  Math.cosFromSin(sx, angleX * 0.5);
         double sy =  Math.sin(angleY * 0.5);
-        double cy =  Math.cos(angleY * 0.5);
+        double cy =  Math.cosFromSin(sy, angleY * 0.5);
         double sz =  Math.sin(angleZ * 0.5);
-        double cz =  Math.cos(angleZ * 0.5);
+        double cz =  Math.cosFromSin(sz, angleZ * 0.5);
 
         double cycz = cy * cz;
         double sysz = sy * sz;
@@ -2714,12 +2728,12 @@ public class Quaterniond implements Externalizable, Quaterniondc {
      * @see org.joml.Quaterniondc#rotateYXZ(double, double, double, org.joml.Quaterniond)
      */
     public Quaterniond rotateYXZ(double angleY, double angleX, double angleZ, Quaterniond dest) {
-        double sx = Math.sin(angleX * 0.5);
-        double cx = Math.cos(angleX * 0.5);
-        double sy = Math.sin(angleY * 0.5);
-        double cy = Math.cos(angleY * 0.5);
-        double sz = Math.sin(angleZ * 0.5);
-        double cz = Math.cos(angleZ * 0.5);
+        double sx =  Math.sin(angleX * 0.5);
+        double cx =  Math.cosFromSin(sx, angleX * 0.5);
+        double sy =  Math.sin(angleY * 0.5);
+        double cy =  Math.cosFromSin(sy, angleY * 0.5);
+        double sz =  Math.sin(angleZ * 0.5);
+        double cz =  Math.cosFromSin(sz, angleZ * 0.5);
 
         double yx = cy * sx;
         double yy = sy * cx;
@@ -2758,7 +2772,7 @@ public class Quaterniond implements Externalizable, Quaterniondc {
         double rx = axisX * invVLength * sinAngle;
         double ry = axisY * invVLength * sinAngle;
         double rz = axisZ * invVLength * sinAngle;
-        double rw = Math.cos(hangle);
+        double rw = Math.cosFromSin(sinAngle, hangle);
 
         dest.set(w * rx + x * rw + y * rz - z * ry,
                  w * ry - x * rz + y * rw + z * rx,
