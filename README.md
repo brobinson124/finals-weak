@@ -5,10 +5,10 @@ Fall 2016
 Professor: Elle Boese
 
 Team Members:
-*Dylan Cole
-*Brooke Robinson
-*Michael Feller
-*Jesus Ortiz Tovar
+* Dylan Cole
+* Brooke Robinson
+* Michael Feller
+* Jesus Ortiz Tovar
 
 #Description:
 We will use the Lightweight Java Game Library (LWGL) to code a 2D, top-down game called “Finals-Weak” where the player must navigate various parts of campus to survive finals week at CU.
