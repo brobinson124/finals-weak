@@ -1,7 +1,11 @@
 #Team: 04-Finals-Weak
 
+CSCI 4448
+
 Object Oriented Analysis and Design Group Project
+
 Fall 2016
+
 Professor: Elle Boese
 
 Team Members:
