@@ -8,7 +8,7 @@ Fall 2016
 
 Professor: Elle Boese
 
-Team Members:
+#Team Members:
 * Dylan Cole
 * Brooke Robinson
 * Michael Feller
