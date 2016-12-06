@@ -12,11 +12,12 @@ Professor: Elle Boese
 * Dylan Cole
 * Brooke Robinson
 * Michael Feller
-* Jesus Ortiz Tovar
+* [Jesus Ortiz Tovar](www.jesusortiztovar.com)
 
 #Description:
 We will use the Lightweight Java Game Library (LWGL) to code a 2D, top-down game called “Finals-Weak” where the player must navigate various parts of campus to survive finals week at CU. Video demo can be seen in the file "Finals-Weak_Video.mp4"
 
-#Link to Class Diagram
-[Class Diagram on LucidChart](https://www.lucidchart.com/invitations/accept/84889681-2c38-455b-bb54-e6215b0d8ffa)
-
+#Links
+[Class Diagram](https://github.com/brobinson124/finals-weak/blob/master/Finals_Weak_Updated_Class_Diagram.png)
+[Video Demo](https://github.com/brobinson124/finals-weak/blob/master/Finals-Weak_Video.mp4)
+[Lightweight Java Game Library](https://www.lwjgl.org/)
